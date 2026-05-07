@@ -339,10 +339,15 @@ function updateDateLabel() {
 // ─── DATE FORMAT MATCH ────────────────────────────────────────
 function matchesViewDate(fechaStr) {
   if (!fechaStr) return false;
-  var d = new Date(fechaStr);
-  if (isNaN(d.getTime())) {
-    var parts = String(fechaStr).split('/');
-    if (parts.length === 3) d = new Date(parts[2]+'-'+parts[1]+'-'+parts[0]);
+  var str = String(fechaStr).trim();
+  var d;
+  // Formato dd/mm/yyyy o d/m/yyyy (el que usa la Sheet)
+  var parts = str.split('/');
+  if (parts.length === 3) {
+    // partes: dia / mes / año
+    d = new Date(parseInt(parts[2]), parseInt(parts[1])-1, parseInt(parts[0]));
+  } else {
+    d = new Date(str);
   }
   if (isNaN(d.getTime())) return false;
   d.setHours(0,0,0,0);
