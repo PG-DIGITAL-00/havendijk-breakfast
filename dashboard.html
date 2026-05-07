@@ -553,12 +553,21 @@ function loadData() {
 
   script.onerror = function() {
     document.getElementById('tt-refresh').textContent = tx.refresh;
-    // Si JSONP falla intentamos fetch normal
+    // JSONP falla — intentamos fetch normal silenciosamente
     fetch(APPS_SCRIPT_URL)
       .then(function(r){ return r.json(); })
       .then(function(data){
         if (data && data.result === 'ok') {
-          reservations = (data.reservations || []).map(function(r){ return Object.assign({},r,{status:'pending',manual:false}); });
+          var now = new Date();
+          var nowMins = now.getHours() * 60 + now.getMinutes();
+          reservations = (data.reservations || []).map(function(r){
+            var parts = (r.horaLlegada || '').split(':');
+            var arrMins = parts.length === 2 ? parseInt(parts[0]) * 60 + parseInt(parts[1]) : 0;
+            var diff = arrMins - nowMins;
+            var status = doneIds[r.id] ? 'done' : (diff <= 30 && diff >= -15) ? 'arriving' : diff < -15 ? 'done' : 'pending';
+            return Object.assign({}, r, { status: status, manual: false });
+          });
+          document.getElementById('error-banner').style.display = 'none';
           render();
         } else { showError(tx.errorLoad); }
       })
