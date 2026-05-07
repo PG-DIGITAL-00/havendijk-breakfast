@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Test de conexión — Havendijk</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: monospace; background: #0f1a0f; color: #e8e4d8; padding: 1.5rem; }
+h2 { color: #7dc47d; margin-bottom: 1rem; font-size: 16px; letter-spacing: 0.1em; }
+.test { background: #162116; border: 0.5px solid #2a3d2a; border-radius: 6px; padding: 12px 16px; margin-bottom: 10px; }
+.test-title { font-size: 13px; color: #a09880; margin-bottom: 6px; }
+.test-result { font-size: 13px; padding: 6px 10px; border-radius: 4px; margin-top: 6px; word-break: break-all; }
+.ok { background: #1a3a1a; color: #7dc47d; border: 0.5px solid #4a9b4a; }
+.fail { background: #3d0a0a; color: #e87a7a; border: 0.5px solid #7a1a1a; }
+.wait { background: #2a2a1a; color: #c9a84c; border: 0.5px solid #6a5a1a; }
+.btn { padding: 10px 20px; background: #4a9b4a; color: #fff; border: none; border-radius: 6px; font-family: monospace; font-size: 13px; cursor: pointer; margin-bottom: 1.5rem; }
+.btn:hover { opacity: 0.85; }
+pre { font-size: 11px; margin-top: 6px; white-space: pre-wrap; color: #7dc47d; }
+</style>
+</head>
+<body>
+<h2>🔌 TEST DE CONEXIÓN — Havendijk Apps Script</h2>
+<button class="btn" onclick="runAll()">▶ Ejecutar todos los tests</button>
+
+<div class="test">
+  <div class="test-title">Test 1 — Fetch GET directo</div>
+  <div class="test-result wait" id="t1">Esperando...</div>
+</div>
+
+<div class="test">
+  <div class="test-title">Test 2 — Fetch GET con mode: cors</div>
+  <div class="test-result wait" id="t2">Esperando...</div>
+</div>
+
+<div class="test">
+  <div class="test-title">Test 3 — Fetch GET con mode: no-cors (solo verifica que responde)</div>
+  <div class="test-result wait" id="t3">Esperando...</div>
+</div>
+
+<div class="test">
+  <div class="test-title">Test 4 — JSONP dinámico</div>
+  <div class="test-result wait" id="t4">Esperando...</div>
+</div>
+
+<div class="test">
+  <div class="test-title">Test 5 — Datos recibidos de la Sheet</div>
+  <div class="test-result wait" id="t5">Esperando...</div>
+  <pre id="t5-data"></pre>
+</div>
+
+<script>
+var URL = 'https://script.google.com/macros/s/AKfycbzkZu1t5sRINGhsBPv0e2igygHgbsKRS4FTYqKhrOBqQAjh8iyVh6dVw35z5mHfKXOk/exec';
+
+function set(id, ok, msg) {
+  var el = document.getElementById(id);
+  el.className = 'test-result ' + (ok ? 'ok' : 'fail');
+  el.textContent = (ok ? '✅ ' : '❌ ') + msg;
+}
+
+function runAll() {
+  ['t1','t2','t3','t4','t5'].forEach(function(id){
+    document.getElementById(id).className = 'test-result wait';
+    document.getElementById(id).textContent = 'Ejecutando...';
+  });
+  document.getElementById('t5-data').textContent = '';
+
+  // Test 1 — fetch simple
+  fetch(URL)
+    .then(function(r){
+      set('t1', true, 'Respuesta recibida — status ' + r.status + ' ' + r.statusText);
+      return r.text();
+    })
+    .then(function(text){
+      try {
+        var data = JSON.parse(text);
+        set('t5', data.result === 'ok', data.result === 'ok'
+          ? 'Datos recibidos correctamente — ' + (data.reservations ? data.reservations.length : 0) + ' reservas en la Sheet'
+          : 'La Sheet respondió pero con error: ' + JSON.stringify(data));
+        if (data.reservations && data.reservations.length > 0) {
+          document.getElementById('t5-data').textContent = JSON.stringify(data.reservations[0], null, 2);
+        } else {
+          document.getElementById('t5-data').textContent = '(Sheet vacía o sin reservas — eso es normal si no hay filas de datos aún)';
+        }
+      } catch(e) {
+        set('t5', false, 'Respuesta no es JSON válido: ' + text.substring(0, 100));
+      }
+    })
+    .catch(function(e){ set('t1', false, 'Error: ' + e.message); set('t5', false, 'No se pudo obtener datos'); });
+
+  // Test 2 — fetch cors
+  fetch(URL, { mode: 'cors' })
+    .then(function(r){ set('t2', true, 'CORS aceptado — status ' + r.status); })
+    .catch(function(e){ set('t2', false, 'CORS bloqueado: ' + e.message); });
+
+  // Test 3 — no-cors
+  fetch(URL, { mode: 'no-cors' })
+    .then(function(){ set('t3', true, 'El servidor responde (opaque response — esperado con no-cors)'); })
+    .catch(function(e){ set('t3', false, 'Sin respuesta: ' + e.message); });
+
+  // Test 4 — JSONP
+  var cbName = 'testCb_' + Date.now();
+  var timeout = setTimeout(function(){
+    set('t4', false, 'JSONP timeout — no respondió en 5 segundos');
+    delete window[cbName];
+  }, 5000);
+  window[cbName] = function(data){
+    clearTimeout(timeout);
+    set('t4', true, 'JSONP funcionó correctamente');
+    delete window[cbName];
+  };
+  var s = document.createElement('script');
+  s.src = URL + '?callback=' + cbName;
+  s.onerror = function(){
+    clearTimeout(timeout);
+    set('t4', false, 'JSONP bloqueado por el navegador o servidor');
+    delete window[cbName];
+  };
+  document.head.appendChild(s);
+}
+</script>
+</body>
+</html>
