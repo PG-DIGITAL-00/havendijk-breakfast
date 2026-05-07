@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Havendijk Hotel — Breakfast Reservation</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-dark: #1a2e1a;
+    --green-mid: #2d5a2d;
+    --green-light: #a8c5a0;
+    --green-pale: #f2f7f0;
+    --cream: #f8f4ed;
+    --cream-dark: #ede8df;
+    --gold: #c9a84c;
+    --text: #1c1c1a;
+    --text-mid: #5a5a55;
+    --text-light: #9a9a92;
+    --border: #ddd8cc;
+    --warning-bg: #fdf3e3;
+    --warning-border: #e8c97a;
+    --warning-text: #7a4e0d;
+    --error: #c0392b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* HERO */
+  .hero {
+    background: var(--green-dark);
+    padding: 2.5rem 1.5rem 2rem;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 50% 0%, rgba(201,168,76,0.12) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .hero-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 0.6rem;
+  }
+  .hero-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--cream);
+    letter-spacing: 0.04em;
+    line-height: 1.1;
+    margin-bottom: 0.35rem;
+  }
+  .hero-sub {
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    opacity: 0.8;
+  }
+  .gold-line {
+    width: 40px;
+    height: 1px;
+    background: var(--gold);
+    margin: 1rem auto 0;
+    opacity: 0.6;
+  }
+
+  /* LANGUAGE BAR */
+  .lang-bar {
+    display: flex;
+    background: var(--green-dark);
+    border-top: 0.5px solid rgba(255,255,255,0.08);
+  }
+  .lang-btn {
+    flex: 1;
+    padding: 11px 6px;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.05em;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    color: rgba(248,244,237,0.45);
+    transition: all 0.2s;
+    border-bottom: 2px solid transparent;
+  }
+  .lang-btn.active {
+    color: var(--cream);
+    border-bottom: 2px solid var(--gold);
+    background: rgba(255,255,255,0.04);
+  }
+
+  /* FORM BODY */
+  .form-body {
+    padding: 1.5rem 1.25rem 0.5rem;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* DAY BADGE */
+  .day-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    background: var(--green-pale);
+    border: 0.5px solid var(--green-light);
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 12px;
+    color: var(--green-mid);
+    font-weight: 500;
+    margin-bottom: 1.25rem;
+    letter-spacing: 0.02em;
+  }
+
+  /* SECTION */
+  .section { margin-bottom: 1.5rem; }
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--text-light);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 0.5px;
+    background: var(--border);
+  }
+
+  /* FIELDS */
+  .field-group { display: flex; flex-direction: column; gap: 4px; }
+  .field-label {
+    font-size: 11px;
+    color: var(--text-mid);
+    font-weight: 400;
+    letter-spacing: 0.03em;
+    padding-left: 1px;
+  }
+  .input-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .input-grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+
+  input, select, textarea {
+    width: 100%;
+    padding: 10px 13px;
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    background: #fff;
+    color: var(--text);
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+  input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--green-mid);
+  }
+  input.error { border-color: var(--error); }
+
+  /* BREAKFAST TYPE CARDS */
+  .type-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .type-card {
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 13px;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.15s;
+    position: relative;
+  }
+  .type-card.selected {
+    border: 1.5px solid var(--green-mid);
+    background: var(--green-pale);
+  }
+  .type-card-icon { font-size: 18px; margin-bottom: 5px; }
+  .type-card-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 2px;
+  }
+  .type-card-sub { font-size: 11px; color: var(--text-light); line-height: 1.4; }
+  .type-card-check {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--green-mid);
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .type-card-check svg { width: 10px; height: 10px; }
+  .type-card.selected .type-card-check { display: flex; }
+
+  /* DISH OPTIONS */
+  .dish-list { display: flex; flex-direction: column; gap: 8px; }
+  .dish-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 13px;
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    cursor: pointer;
+    background: #fff;
+    transition: all 0.15s;
+  }
+  .dish-item.selected {
+    border: 1.5px solid var(--green-mid);
+    background: var(--green-pale);
+  }
+  .dish-letter {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--green-dark);
+    color: var(--cream);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-family: 'Cormorant Garamond', serif;
+    letter-spacing: 0;
+  }
+  .dish-item.selected .dish-letter { background: var(--green-mid); }
+  .dish-desc { font-size: 13px; color: var(--text); line-height: 1.45; padding-top: 4px; font-weight: 300; }
+
+  /* WEEKEND NOTE */
+  .weekend-note {
+    background: var(--green-pale);
+    border: 0.5px solid var(--green-light);
+    border-radius: 8px;
+    padding: 13px 15px;
+    font-size: 13px;
+    color: var(--green-mid);
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  /* TIME SLOTS */
+  .time-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .time-slot {
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    padding: 10px 6px;
+    text-align: center;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 400;
+    background: #fff;
+    color: var(--text);
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+    letter-spacing: 0.03em;
+  }
+  .time-slot.selected {
+    background: var(--green-dark);
+    color: var(--cream);
+    border-color: var(--green-dark);
+  }
+
+  /* DIETARY */
+  .dietary-warning {
+    background: var(--warning-bg);
+    border: 0.5px solid var(--warning-border);
+    border-radius: 6px;
+    padding: 10px 13px;
+    font-size: 12px;
+    color: var(--warning-text);
+    line-height: 1.55;
+    margin-bottom: 10px;
+  }
+
+  /* SUBMIT */
+  .submit-wrap { padding: 0 1.25rem 2rem; max-width: 480px; margin: 0 auto; }
+  .submit-btn {
+    width: 100%;
+    padding: 15px;
+    background: var(--green-dark);
+    color: var(--cream);
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: opacity 0.15s;
+    margin-top: 1.25rem;
+  }
+  .submit-btn:hover { opacity: 0.88; }
+
+  /* CONFIRMATION SCREEN */
+  .confirm-screen {
+    display: none;
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 2.5rem 1.5rem;
+    text-align: center;
+  }
+  .confirm-card {
+    background: #fff;
+    border: 0.5px solid var(--border);
+    border-radius: 12px;
+    padding: 2rem 1.5rem;
+    margin-bottom: 1rem;
+  }
+  .confirm-icon { font-size: 44px; margin-bottom: 1rem; }
+  .confirm-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 26px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+  .confirm-sub { font-size: 13px; color: var(--text-mid); line-height: 1.6; margin-bottom: 1.25rem; font-weight: 300; }
+  .confirm-details {
+    background: var(--green-pale);
+    border-radius: 8px;
+    padding: 14px 16px;
+    text-align: left;
+    margin-bottom: 1.25rem;
+  }
+  .confirm-row { display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0; }
+  .confirm-row-label { color: var(--text-light); }
+  .confirm-row-val { color: var(--text); font-weight: 500; }
+
+  /* GIFT CARD */
+  .gift-card {
+    background: var(--green-dark);
+    border-radius: 10px;
+    padding: 1.25rem 1.5rem;
+    color: var(--cream);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  .gift-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.18) 0%, transparent 60%);
+    pointer-events: none;
+  }
+  .gift-text { flex: 1; position: relative; text-align: left; }
+  .gift-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    margin-bottom: 0.4rem;
+  }
+  .gift-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+  }
+  .gift-sub { font-size: 12px; color: var(--green-light); font-weight: 300; }
+  .gift-icon {
+    font-size: 36px;
+    flex-shrink: 0;
+    opacity: 0.75;
+    position: relative;
+  }
+
+  /* ERROR MSG */
+  .err-msg { font-size: 11px; color: var(--error); margin-top: 4px; display: none; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Havendijk Hotel</div>
+  <div class="hero-title" id="hero-title">Breakfast<br>Reservation</div>
+  <div class="hero-sub" id="hero-sub">Reserve your morning experience</div>
+  <div class="gold-line"></div>
+</div>
+
+<!-- LANGUAGE BAR -->
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('en')">🇬🇧 English</button>
+  <button class="lang-btn" onclick="setLang('es')">🇪🇸 Español</button>
+  <button class="lang-btn" onclick="setLang('nl')">🇳🇱 Nederlands</button>
+</div>
+
+<!-- FORM -->
+<div id="form-page">
+  <div class="form-body">
+
+    <!-- Day badge -->
+    <div class="day-badge" id="day-badge">📅 Monday — Weekday breakfast</div>
+
+    <!-- ROOM DETAILS -->
+    <div class="section">
+      <div class="section-label" id="lbl-room-section">Room details</div>
+      <div class="input-grid-2" style="margin-bottom:10px;">
+        <div class="field-group">
+          <span class="field-label" id="fl-room">Room number</span>
+          <input type="number" id="f-room" min="1" max="999">
+          <span class="err-msg" id="err-room">Required</span>
+        </div>
+        <div class="field-group">
+          <span class="field-label" id="fl-adults">Adults</span>
+          <input type="number" id="f-adults" min="1" max="20" value="1">
+        </div>
+      </div>
+      <div class="input-grid-2">
+        <div class="field-group">
+          <span class="field-label" id="fl-children">Children</span>
+          <input type="number" id="f-children" min="0" max="10" value="0">
+        </div>
+        <div class="field-group">
+          <span class="field-label" id="fl-childage">Children's age</span>
+          <input type="number" id="f-childage" min="0" max="17" placeholder="—">
+        </div>
+      </div>
+    </div>
+
+    <!-- BREAKFAST TYPE -->
+    <div class="section">
+      <div class="section-label" id="lbl-type-section">Breakfast type</div>
+      <div class="type-cards">
+        <div class="type-card selected" id="card-included" onclick="selectType('included')">
+          <div class="type-card-check">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#f8f4ed" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="type-card-icon">✅</div>
+          <div class="type-card-title" id="lbl-included">Included</div>
+          <div class="type-card-sub" id="lbl-included-sub">Already paid with your reservation</div>
+        </div>
+        <div class="type-card" id="card-add" onclick="selectType('add')">
+          <div class="type-card-check">
+            <svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="#f8f4ed" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <div class="type-card-icon">➕</div>
+          <div class="type-card-title" id="lbl-add">Add on</div>
+          <div class="type-card-sub" id="lbl-add-sub">Pay at the restaurant · €19.50 p.p.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- MAIN DISH (weekday only) -->
+    <div class="section" id="dish-section">
+      <div class="section-label" id="lbl-dish-section">Choose your main dish</div>
+      <div class="dish-list">
+        <div class="dish-item" id="opt-A" onclick="selectDish('A')">
+          <div class="dish-letter">A</div>
+          <div class="dish-desc" id="desc-A">Omelette, fried or scrambled eggs — choice of ham, cheese or bacon</div>
+        </div>
+        <div class="dish-item" id="opt-B" onclick="selectDish('B')">
+          <div class="dish-letter">B</div>
+          <div class="dish-desc" id="desc-B">Avocado toast — poached egg, seeds & olive oil</div>
+        </div>
+        <div class="dish-item" id="opt-C" onclick="selectDish('C')">
+          <div class="dish-letter">C</div>
+          <div class="dish-desc" id="desc-C">Smoked salmon — cream cheese, multigrain bread, rucola & lemon</div>
+        </div>
+        <div class="dish-item" id="opt-D" onclick="selectDish('D')">
+          <div class="dish-letter">D</div>
+          <div class="dish-desc" id="desc-D">Extra main dish (+€9 p.p.) — to be confirmed at the restaurant</div>
+        </div>
+      </div>
+      <span class="err-msg" id="err-dish" style="display:none;">Please select a dish</span>
+    </div>
+
+    <!-- WEEKEND NOTE -->
+    <div class="section" id="weekend-section" style="display:none;">
+      <div class="weekend-note" id="weekend-note">
+        🥐 Continental buffet — a refined selection of breads, pastries, cold cuts, cheeses and fresh seasonal items. No dish selection required.
+      </div>
+    </div>
+
+    <!-- ARRIVAL TIME -->
+    <div class="section">
+      <div class="section-label" id="lbl-time-section">Preferred arrival time</div>
+      <div class="time-grid" id="slots-weekday">
+        <div class="time-slot" onclick="selectTime('07:00')">07:00</div>
+        <div class="time-slot" onclick="selectTime('07:30')">07:30</div>
+        <div class="time-slot" onclick="selectTime('08:00')">08:00</div>
+        <div class="time-slot" onclick="selectTime('08:30')">08:30</div>
+        <div class="time-slot" onclick="selectTime('09:00')">09:00</div>
+        <div class="time-slot" onclick="selectTime('09:30')">09:30</div>
+      </div>
+      <div class="time-grid" id="slots-weekend" style="display:none;">
+        <div class="time-slot" onclick="selectTime('08:00')">08:00</div>
+        <div class="time-slot" onclick="selectTime('08:30')">08:30</div>
+        <div class="time-slot" onclick="selectTime('09:00')">09:00</div>
+        <div class="time-slot" onclick="selectTime('09:30')">09:30</div>
+        <div class="time-slot" onclick="selectTime('10:00')">10:00</div>
+        <div class="time-slot" onclick="selectTime('10:30')">10:30</div>
+      </div>
+      <span class="err-msg" id="err-time">Please select an arrival time</span>
+    </div>
+
+    <!-- DIETARY -->
+    <div class="section">
+      <div class="section-label" id="lbl-dietary-section">Dietary requirements</div>
+      <div class="dietary-warning" id="dietary-warning">
+        ⚠️ Lactose-free or gluten-free options must be requested at least 12 hours in advance. Please note below and inform reception.
+      </div>
+      <textarea id="f-dietary" rows="2" style="resize:none;" placeholder="e.g. lactose intolerance, vegetarian, nut allergy…"></textarea>
+    </div>
+
+  </div><!-- /form-body -->
+
+  <div class="submit-wrap">
+    <button class="submit-btn" id="lbl-submit" onclick="submitForm()">Reserve breakfast</button>
+  </div>
+</div><!-- /form-page -->
+
+<!-- CONFIRMATION SCREEN -->
+<div class="confirm-screen" id="confirm-page">
+  <div class="confirm-card">
+    <div class="confirm-icon">🍳</div>
+    <div class="confirm-title" id="conf-title">Reservation confirmed!</div>
+    <div class="confirm-sub" id="conf-sub">The kitchen has been notified. Your table will be ready on arrival.</div>
+    <div class="confirm-details">
+      <div class="confirm-row"><span class="confirm-row-label" id="conf-lbl-room">Room</span><span class="confirm-row-val" id="conf-room">—</span></div>
+      <div class="confirm-row"><span class="confirm-row-label" id="conf-lbl-guests">Guests</span><span class="confirm-row-val" id="conf-guests">—</span></div>
+      <div class="confirm-row"><span class="confirm-row-label" id="conf-lbl-time">Arrival time</span><span class="confirm-row-val" id="conf-time">—</span></div>
+      <div class="confirm-row"><span class="confirm-row-label" id="conf-lbl-dish">Dish</span><span class="confirm-row-val" id="conf-dish">—</span></div>
+      <div class="confirm-row" id="conf-dietary-row" style="display:none;"><span class="confirm-row-label" id="conf-lbl-dietary">Note</span><span class="confirm-row-val" id="conf-dietary">—</span></div>
+    </div>
+    <div class="gift-card">
+      <div class="gift-text">
+        <div class="gift-label" id="gift-label">Complimentary gift</div>
+        <div class="gift-title" id="gift-title">Take-away coffee ☕</div>
+        <div class="gift-sub" id="gift-sub">Show this screen at the restaurant — valid any time today</div>
+      </div>
+      <div class="gift-icon">🎁</div>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── STATE ────────────────────────────────────────────────
+var lang = 'en';
+var selectedType = 'included';
+var selectedDish = null;
+var selectedTime = null;
+var isWeekend = false;
+
+// ─── TRANSLATIONS ─────────────────────────────────────────
+var T = {
+  en: {
+    heroTitle: 'Breakfast<br>Reservation',
+    heroSub: 'Reserve your morning experience',
+    lblRoomSection: 'Room details',
+    flRoom: 'Room number', flAdults: 'Adults', flChildren: 'Children', flChildage: "Children's age",
+    lblTypeSection: 'Breakfast type',
+    lblIncluded: 'Included', lblIncludedSub: 'Already paid with your reservation',
+    lblAdd: 'Add on', lblAddSub: 'Pay at the restaurant · €19.50 p.p.',
+    lblDishSection: 'Choose your main dish',
+    descA: 'Omelette, fried or scrambled eggs — choice of ham, cheese or bacon',
+    descB: 'Avocado toast — poached egg, seeds & olive oil',
+    descC: 'Smoked salmon — cream cheese, multigrain bread, rucola & lemon',
+    descD: 'Extra main dish (+€9 p.p.) — to be confirmed at the restaurant',
+    weekendNote: '🥐 Continental buffet — a refined selection of breads, pastries, cold cuts, cheeses and fresh seasonal items. No dish selection required.',
+    lblTimeSection: 'Preferred arrival time',
+    lblDietarySection: 'Dietary requirements',
+    dietaryWarning: '⚠️ Lactose-free or gluten-free options must be requested at least 12 hours in advance. Please note below and inform reception.',
+    dietaryPh: 'e.g. lactose intolerance, vegetarian, nut allergy…',
+    lblSubmit: 'Reserve breakfast',
+    confTitle: 'Reservation confirmed!',
+    confSub: 'The kitchen has been notified. Your table will be ready on arrival.',
+    confLblRoom: 'Room', confLblGuests: 'Guests', confLblTime: 'Arrival', confLblDish: 'Dish', confLblDietary: 'Note',
+    giftLabel: 'Complimentary gift',
+    giftTitle: 'Take-away coffee ☕',
+    giftSub: 'Show this screen at the restaurant — valid any time today',
+    dayBadgeWd: '📅 {day} — Weekday breakfast',
+    dayBadgeWe: '📅 {day} — Weekend buffet',
+    days: ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],
+    errRoom: 'Please enter your room number',
+    errDish: 'Please select a main dish',
+    errTime: 'Please select an arrival time',
+    adult: 'adult', adults: 'adults', child: 'child', children: 'children',
+    dishNames: { A:'Dish A — Eggs', B:'Dish B — Avocado', C:'Dish C — Salmon', D:'Dish D — Extra', buffet:'Continental buffet' },
+    included: 'Included', addon: 'Pay at restaurant'
+  },
+  es: {
+    heroTitle: 'Reserva de<br>Desayuno',
+    heroSub: 'Reservá tu experiencia mañanera',
+    lblRoomSection: 'Datos de la habitación',
+    flRoom: 'Número de habitación', flAdults: 'Adultos', flChildren: 'Niños', flChildage: 'Edad de los niños',
+    lblTypeSection: 'Tipo de desayuno',
+    lblIncluded: 'Incluido', lblIncludedSub: 'Ya pagado con tu reserva',
+    lblAdd: 'Agregar', lblAddSub: 'Pagar en el restaurante · €19.50 p.p.',
+    lblDishSection: 'Elegí tu plato principal',
+    descA: 'Omelette, huevos fritos o revueltos — con jamón, queso o bacon',
+    descB: 'Tostada de aguacate — huevo poché, semillas y aceite de oliva',
+    descC: 'Salmón ahumado — queso crema, pan multigrano, rúcula y limón',
+    descD: 'Plato principal extra (+€9 p.p.) — a confirmar en el restaurante',
+    weekendNote: '🥐 Buffet continental — una selección refinada de panes, medialunas, fiambres, quesos y productos frescos de temporada. No es necesario elegir plato.',
+    lblTimeSection: 'Horario de llegada preferido',
+    lblDietarySection: 'Requisitos dietéticos',
+    dietaryWarning: '⚠️ Las opciones sin lactosa o sin gluten deben solicitarse con al menos 12 horas de anticipación. Por favor anotá abajo e informá a recepción.',
+    dietaryPh: 'ej. intolerancia a la lactosa, vegetariano, alergia a los frutos secos…',
+    lblSubmit: 'Reservar desayuno',
+    confTitle: '¡Reserva confirmada!',
+    confSub: 'La cocina fue notificada. Tu mesa estará lista cuando llegues.',
+    confLblRoom: 'Habitación', confLblGuests: 'Huéspedes', confLblTime: 'Llegada', confLblDish: 'Plato', confLblDietary: 'Nota',
+    giftLabel: 'Regalo de bienvenida',
+    giftTitle: 'Café para llevar ☕',
+    giftSub: 'Mostrá esta pantalla en el restaurante — válido en cualquier momento hoy',
+    dayBadgeWd: '📅 {day} — Desayuno entre semana',
+    dayBadgeWe: '📅 {day} — Buffet de fin de semana',
+    days: ['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],
+    errRoom: 'Por favor ingresá tu número de habitación',
+    errDish: 'Por favor seleccioná un plato principal',
+    errTime: 'Por favor seleccioná un horario de llegada',
+    adult: 'adulto', adults: 'adultos', child: 'niño', children: 'niños',
+    dishNames: { A:'Plato A — Huevos', B:'Plato B — Aguacate', C:'Plato C — Salmón', D:'Plato D — Extra', buffet:'Buffet continental' },
+    included: 'Incluido', addon: 'Pagar en restaurante'
+  },
+  nl: {
+    heroTitle: 'Ontbijt<br>Reservering',
+    heroSub: 'Reserveer uw ochtendbeleving',
+    lblRoomSection: 'Kamergegevens',
+    flRoom: 'Kamernummer', flAdults: 'Volwassenen', flChildren: 'Kinderen', flChildage: 'Leeftijd kinderen',
+    lblTypeSection: 'Type ontbijt',
+    lblIncluded: 'Inbegrepen', lblIncludedSub: 'Al betaald bij uw reservering',
+    lblAdd: 'Toevoegen', lblAddSub: 'Betalen in het restaurant · €19,50 p.p.',
+    lblDishSection: 'Kies uw hoofdgerecht',
+    descA: 'Omelet, gebakken of roerei — met ham, kaas of spek',
+    descB: 'Avocadotoast — gepocheerd ei, zaden & olijfolie',
+    descC: 'Gerookte zalm — roomkaas, meergranenbrood, rucola & citroen',
+    descD: 'Extra hoofdgerecht (+€9 p.p.) — te bevestigen in het restaurant',
+    weekendNote: '🥐 Continentaal buffet — een verfijnd aanbod van brood, gebak, vleeswaren, kazen en verse seizoensproducten. Geen gerechtkeuze vereist.',
+    lblTimeSection: 'Gewenste aankomsttijd',
+    lblDietarySection: 'Dieetwensen',
+    dietaryWarning: '⚠️ Lactosevrije of glutenvrije opties dienen minimaal 12 uur van tevoren aangevraagd te worden. Noteer hieronder en informeer de receptie.',
+    dietaryPh: 'bijv. lactose-intolerantie, vegetarisch, notenallergie…',
+    lblSubmit: 'Ontbijt reserveren',
+    confTitle: 'Reservering bevestigd!',
+    confSub: 'De keuken is op de hoogte gesteld. Uw tafel staat klaar bij aankomst.',
+    confLblRoom: 'Kamer', confLblGuests: 'Gasten', confLblTime: 'Aankomst', confLblDish: 'Gerecht', confLblDietary: 'Opmerking',
+    giftLabel: 'Welkomstgeschenk',
+    giftTitle: 'Koffie to go ☕',
+    giftSub: 'Toon dit scherm in het restaurant — geldig op elk moment vandaag',
+    dayBadgeWd: '📅 {day} — Doordeweeks ontbijt',
+    dayBadgeWe: '📅 {day} — Weekendbuffet',
+    days: ['Zondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrijdag','Zaterdag'],
+    errRoom: 'Vul uw kamernummer in',
+    errDish: 'Kies een hoofdgerecht',
+    errTime: 'Kies een aankomsttijd',
+    adult: 'volwassene', adults: 'volwassenen', child: 'kind', children: 'kinderen',
+    dishNames: { A:'Gerecht A — Eieren', B:'Gerecht B — Avocado', C:'Gerecht C — Zalm', D:'Gerecht D — Extra', buffet:'Continentaal buffet' },
+    included: 'Inbegrepen', addon: 'Betalen in restaurant'
+  }
+};
+
+// ─── INIT ─────────────────────────────────────────────────
+function init() {
+  var d = new Date();
+  var day = d.getDay();
+  isWeekend = (day === 0 || day === 6);
+  updateDayUI();
+}
+
+function updateDayUI() {
+  var tx = T[lang];
+  var dayName = tx.days[new Date().getDay()];
+  var badge = isWeekend ? tx.dayBadgeWe : tx.dayBadgeWd;
+  document.getElementById('day-badge').textContent = badge.replace('{day}', dayName);
+  document.getElementById('dish-section').style.display = isWeekend ? 'none' : '';
+  document.getElementById('weekend-section').style.display = isWeekend ? '' : 'none';
+  document.getElementById('slots-weekday').style.display = isWeekend ? 'none' : '';
+  document.getElementById('slots-weekend').style.display = isWeekend ? '' : 'none';
+  selectedTime = null;
+  document.querySelectorAll('.time-slot').forEach(function(s){ s.classList.remove('selected'); });
+}
+
+// ─── LANGUAGE ─────────────────────────────────────────────
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(function(b, i){ b.classList.toggle('active', ['en','es','nl'][i] === l); });
+  var tx = T[l];
+  document.getElementById('hero-title').innerHTML = tx.heroTitle;
+  document.getElementById('hero-sub').textContent = tx.heroSub;
+  document.getElementById('lbl-room-section').childNodes[0].textContent = tx.lblRoomSection + ' ';
+  document.getElementById('fl-room').textContent = tx.flRoom;
+  document.getElementById('fl-adults').textContent = tx.flAdults;
+  document.getElementById('fl-children').textContent = tx.flChildren;
+  document.getElementById('fl-childage').textContent = tx.flChildage;
+  document.getElementById('lbl-type-section').childNodes[0].textContent = tx.lblTypeSection + ' ';
+  document.getElementById('lbl-included').textContent = tx.lblIncluded;
+  document.getElementById('lbl-included-sub').textContent = tx.lblIncludedSub;
+  document.getElementById('lbl-add').textContent = tx.lblAdd;
+  document.getElementById('lbl-add-sub').textContent = tx.lblAddSub;
+  document.getElementById('lbl-dish-section').childNodes[0].textContent = tx.lblDishSection + ' ';
+  document.getElementById('desc-A').textContent = tx.descA;
+  document.getElementById('desc-B').textContent = tx.descB;
+  document.getElementById('desc-C').textContent = tx.descC;
+  document.getElementById('desc-D').textContent = tx.descD;
+  document.getElementById('weekend-note').textContent = tx.weekendNote;
+  document.getElementById('lbl-time-section').childNodes[0].textContent = tx.lblTimeSection + ' ';
+  document.getElementById('lbl-dietary-section').childNodes[0].textContent = tx.lblDietarySection + ' ';
+  document.getElementById('dietary-warning').textContent = tx.dietaryWarning;
+  document.getElementById('f-dietary').placeholder = tx.dietaryPh;
+  document.getElementById('lbl-submit').textContent = tx.lblSubmit;
+  document.getElementById('err-room').textContent = tx.errRoom;
+  document.getElementById('err-dish').textContent = tx.errDish;
+  document.getElementById('err-time').textContent = tx.errTime;
+  updateDayUI();
+}
+
+// ─── INTERACTIONS ─────────────────────────────────────────
+function selectType(t) {
+  selectedType = t;
+  document.getElementById('card-included').classList.toggle('selected', t === 'included');
+  document.getElementById('card-add').classList.toggle('selected', t === 'add');
+}
+
+function selectDish(d) {
+  selectedDish = d;
+  ['A','B','C','D'].forEach(function(x){ document.getElementById('opt-'+x).classList.toggle('selected', x === d); });
+  document.getElementById('err-dish').style.display = 'none';
+}
+
+function selectTime(t) {
+  selectedTime = t;
+  document.querySelectorAll('.time-slot').forEach(function(s){ s.classList.toggle('selected', s.textContent === t); });
+  document.getElementById('err-time').style.display = 'none';
+}
+
+// ─── SUBMIT ───────────────────────────────────────────────
+function submitForm() {
+  var tx = T[lang];
+  var valid = true;
+  var room = document.getElementById('f-room').value;
+  if (!room) {
+    document.getElementById('f-room').classList.add('error');
+    document.getElementById('err-room').style.display = 'block';
+    valid = false;
+  } else {
+    document.getElementById('f-room').classList.remove('error');
+    document.getElementById('err-room').style.display = 'none';
+  }
+  if (!isWeekend && !selectedDish) {
+    document.getElementById('err-dish').style.display = 'block';
+    valid = false;
+  }
+  if (!selectedTime) {
+    document.getElementById('err-time').style.display = 'block';
+    valid = false;
+  }
+  if (!valid) return;
+
+  // Build confirm screen
+  var adults = parseInt(document.getElementById('f-adults').value) || 1;
+  var children = parseInt(document.getElementById('f-children').value) || 0;
+  var dietary = document.getElementById('f-dietary').value.trim();
+  var guestStr = adults + ' ' + (adults === 1 ? tx.adult : tx.adults);
+  if (children > 0) guestStr += ' + ' + children + ' ' + (children === 1 ? tx.child : tx.children);
+  var dishStr = isWeekend ? tx.dishNames.buffet : (tx.dishNames[selectedDish] + ' · ' + (selectedType === 'included' ? tx.included : tx.addon));
+
+  document.getElementById('conf-title').textContent = tx.confTitle;
+  document.getElementById('conf-sub').textContent = tx.confSub;
+  document.getElementById('conf-lbl-room').textContent = tx.confLblRoom;
+  document.getElementById('conf-lbl-guests').textContent = tx.confLblGuests;
+  document.getElementById('conf-lbl-time').textContent = tx.confLblTime;
+  document.getElementById('conf-lbl-dish').textContent = tx.confLblDish;
+  document.getElementById('conf-room').textContent = room;
+  document.getElementById('conf-guests').textContent = guestStr;
+  document.getElementById('conf-time').textContent = selectedTime;
+  document.getElementById('conf-dish').textContent = dishStr;
+  document.getElementById('gift-label').textContent = tx.giftLabel;
+  document.getElementById('gift-title').textContent = tx.giftTitle;
+  document.getElementById('gift-sub').textContent = tx.giftSub;
+
+  if (dietary) {
+    document.getElementById('conf-dietary-row').style.display = 'flex';
+    document.getElementById('conf-lbl-dietary').textContent = tx.confLblDietary;
+    document.getElementById('conf-dietary').textContent = dietary;
+  }
+
+  // ── GOOGLE SHEETS CONNECTION (ACTIVA) ────────────────
+  var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCE9HKW9-CMU9pcjFXbxSyztZz1Pr8BM-qtahpdnBxeU0vWfqaFYVVRfkyVFvw49u8/exec';
+
+  var now = new Date();
+  var fecha = now.toLocaleDateString('es-AR');
+  var horaRegistro = now.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+  var payload = {
+    fecha:        fecha,
+    horaRegistro: horaRegistro,
+    habitacion:   room,
+    adultos:      adults,
+    ninos:        children,
+    edadNinos:    document.getElementById('f-childage').value || '—',
+    tipo:         selectedType === 'included' ? 'Incluido' : 'Agrega en restaurante',
+    plato:        isWeekend ? 'Buffet continental' : ('Plato ' + selectedDish),
+    horaLlegada:  selectedTime,
+    dietetico:    dietary || '—',
+    idioma:       lang.toUpperCase()
+  };
+
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  }).catch(function(err) {
+    console.warn('Sheet sync error:', err);
+  });
+  // ─────────────────────────────────────────────────────
+
+  document.getElementById('form-page').style.display = 'none';
+  document.getElementById('confirm-page').style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+// ─── START ────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>

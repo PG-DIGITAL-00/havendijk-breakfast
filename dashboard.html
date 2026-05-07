@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Havendijk — Kitchen Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600&family=DM+Sans:wght@300;400;500&family=Outfit:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0f1a0f;
+    --bg2: #162116;
+    --bg3: #1e2e1e;
+    --green: #4a9b4a;
+    --green-light: #7dc47d;
+    --green-pale: #1a3a1a;
+    --gold: #c9a84c;
+    --cream: #f0ebe0;
+    --cream-dim: #a09880;
+    --text: #e8e4d8;
+    --text-mid: #8a8878;
+    --border: #2a3d2a;
+    --arriving: #1e3d1e;
+    --arriving-border: #4a9b4a;
+    --manual-border: #3d6b8a;
+    --manual-bg: #1a2d3d;
+    --warn-bg: #3d2e0a;
+    --warn-text: #e8b84a;
+    --done-opacity: 0.35;
+    --red: #c0392b;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* TOPBAR */
+  .topbar {
+    background: var(--bg2);
+    border-bottom: 0.5px solid var(--border);
+    padding: 0.85rem 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 10px;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .topbar-left { display: flex; flex-direction: column; gap: 2px; }
+  .topbar-hotel {
+    font-size: 10px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--green-light);
+    font-weight: 400;
+  }
+  .topbar-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--cream);
+    letter-spacing: 0.03em;
+  }
+  .topbar-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .lang-row { display: flex; gap: 4px; }
+  .lang-btn {
+    font-size: 11px;
+    padding: 3px 9px;
+    border: 0.5px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-mid);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .lang-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+  .live-pill {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--green-light);
+    background: var(--green-pale);
+    border: 0.5px solid var(--green);
+    border-radius: 20px;
+    padding: 3px 10px;
+  }
+  .live-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green-light);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+  .topbar-date { font-size: 12px; color: var(--text-mid); font-family: 'Outfit', sans-serif; }
+  .refresh-btn {
+    font-size: 12px;
+    padding: 5px 12px;
+    border: 0.5px solid var(--border);
+    border-radius: 6px;
+    cursor: pointer;
+    background: var(--bg3);
+    color: var(--text-mid);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .refresh-btn:hover { border-color: var(--green); color: var(--green-light); }
+
+  /* MAIN LAYOUT */
+  .main { padding: 1rem 1.25rem; max-width: 900px; margin: 0 auto; }
+
+  /* METRICS */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 1rem; }
+  .metric {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .metric-label { font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-mid); margin-bottom: 6px; }
+  .metric-value { font-size: 26px; font-weight: 500; color: var(--cream); font-family: 'Outfit', sans-serif; line-height: 1; }
+  .metric-sub { font-size: 11px; color: var(--text-mid); margin-top: 4px; }
+
+  /* DISH SUMMARY */
+  .dish-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 1rem; }
+  .dish-pill {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .dish-left { display: flex; align-items: center; gap: 8px; }
+  .dish-badge {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    background: var(--green-pale);
+    border: 0.5px solid var(--green);
+    color: var(--green-light);
+    font-size: 11px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif;
+  }
+  .dish-name { font-size: 11px; color: var(--text-mid); }
+  .dish-count { font-size: 20px; font-weight: 400; color: var(--cream); font-family: 'Outfit', sans-serif; }
+
+  /* SECTION LABEL */
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    margin-bottom: 0.6rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after { content: ''; flex: 1; height: 0.5px; background: var(--border); }
+
+  /* ADD BAR */
+  .add-bar {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 1rem;
+  }
+  .add-bar-title {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--text-mid);
+    margin-bottom: 8px;
+  }
+  .add-fields { display: grid; grid-template-columns: 80px 56px 56px 80px 64px 1fr auto; gap: 6px; align-items: end; }
+  .add-field { display: flex; flex-direction: column; gap: 3px; }
+  .add-label { font-size: 10px; color: var(--text-mid); }
+  input, select {
+    padding: 6px 9px;
+    border: 0.5px solid var(--border);
+    border-radius: 5px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg3);
+    color: var(--text);
+    width: 100%;
+    -webkit-appearance: none;
+  }
+  input:focus, select:focus { outline: none; border-color: var(--green); }
+  select option { background: var(--bg3); }
+  .add-btn {
+    padding: 0 14px;
+    height: 30px;
+    background: var(--green);
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 12px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: opacity 0.15s;
+  }
+  .add-btn:hover { opacity: 0.85; }
+
+  /* FILTERS */
+  .filter-row { display: flex; gap: 6px; margin-bottom: 0.75rem; flex-wrap: wrap; }
+  .filter-btn {
+    font-size: 12px;
+    padding: 4px 12px;
+    border: 0.5px solid var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    background: transparent;
+    color: var(--text-mid);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+  }
+  .filter-btn.active { background: var(--green); color: #fff; border-color: var(--green); }
+
+  /* RESERVATION LIST */
+  .res-list { display: flex; flex-direction: column; gap: 6px; }
+  .res-card {
+    background: var(--bg2);
+    border: 0.5px solid var(--border);
+    border-radius: 8px;
+    padding: 11px 14px;
+    display: grid;
+    grid-template-columns: 58px 1fr auto;
+    align-items: center;
+    gap: 14px;
+    transition: opacity 0.2s;
+  }
+  .res-card.arriving { border-color: var(--arriving-border); background: var(--arriving); }
+  .res-card.manual { border-left: 2px solid var(--manual-border); }
+  .res-card.done { opacity: var(--done-opacity); }
+
+  .res-time { display: flex; flex-direction: column; }
+  .res-time-val { font-size: 17px; font-weight: 400; color: var(--cream); font-family: 'Outfit', sans-serif; }
+  .res-time-lbl { font-size: 10px; color: var(--text-mid); }
+
+  .res-info { display: flex; flex-direction: column; gap: 3px; }
+  .res-room-row { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .res-room { font-size: 14px; font-weight: 500; color: var(--cream); }
+  .badge {
+    font-size: 10px;
+    padding: 2px 7px;
+    border-radius: 20px;
+    font-weight: 400;
+    white-space: nowrap;
+  }
+  .badge-pending { background: var(--warn-bg); color: var(--warn-text); }
+  .badge-arriving { background: var(--green-pale); color: var(--green-light); border: 0.5px solid var(--green); }
+  .badge-done { background: var(--bg3); color: var(--text-mid); }
+  .badge-manual { background: var(--manual-bg); color: #7ab3d4; }
+  .badge-dietary { background: #3d1a0a; color: #e8834a; font-size: 10px; padding: 2px 7px; border-radius: 20px; }
+  .res-detail { font-size: 12px; color: var(--text-mid); }
+
+  .res-right { display: flex; align-items: center; gap: 8px; }
+  .res-dish-badge {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--green-pale);
+    border: 0.5px solid var(--green);
+    color: var(--green-light);
+    font-size: 12px;
+    font-weight: 500;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Outfit', sans-serif;
+    flex-shrink: 0;
+  }
+  .res-dish-badge.buffet { background: #1a2d3a; border-color: #3d7a9b; color: #7ab3d4; font-size: 9px; }
+  .done-btn {
+    font-size: 11px;
+    padding: 4px 10px;
+    border: 0.5px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    background: var(--bg3);
+    color: var(--text-mid);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .done-btn:hover { border-color: var(--green); color: var(--green-light); }
+
+  /* LOADING / EMPTY */
+  .state-msg {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    color: var(--text-mid);
+    font-size: 13px;
+  }
+  .state-icon { font-size: 28px; display: block; margin-bottom: 0.5rem; }
+
+  /* ERROR BANNER */
+  .error-banner {
+    background: #3d0a0a;
+    border: 0.5px solid #7a1a1a;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 12px;
+    color: #e87a7a;
+    margin-bottom: 1rem;
+    display: none;
+  }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-hotel">Havendijk Hotel</span>
+    <span class="topbar-title" id="tt-title">Kitchen Dashboard</span>
+  </div>
+  <div class="topbar-right">
+    <div class="lang-row">
+      <button class="lang-btn active" onclick="setLang('en')">EN</button>
+      <button class="lang-btn" onclick="setLang('es')">ES</button>
+      <button class="lang-btn" onclick="setLang('nl')">NL</button>
+    </div>
+    <div class="live-pill"><div class="live-dot"></div><span id="tt-live">Live</span></div>
+    <span class="topbar-date" id="top-date"></span>
+    <button class="refresh-btn" id="tt-refresh" onclick="loadData()">↻ Refresh</button>
+  </div>
+</div>
+
+<div class="main">
+
+  <!-- ERROR BANNER -->
+  <div class="error-banner" id="error-banner"></div>
+
+  <!-- METRICS -->
+  <div class="metrics">
+    <div class="metric">
+      <div class="metric-label" id="sm-total">Reservations</div>
+      <div class="metric-value" id="mv-total">—</div>
+      <div class="metric-sub" id="mv-total-sub">today</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label" id="sm-guests">Guests</div>
+      <div class="metric-value" id="mv-guests">—</div>
+      <div class="metric-sub" id="mv-guests-sub">total covers</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label" id="sm-pending">Pending</div>
+      <div class="metric-value" id="mv-pending">—</div>
+      <div class="metric-sub" id="sm-pending-sub">not yet arrived</div>
+    </div>
+    <div class="metric">
+      <div class="metric-label" id="sm-done">Completed</div>
+      <div class="metric-value" id="mv-done">—</div>
+      <div class="metric-sub" id="sm-done-sub">served</div>
+    </div>
+  </div>
+
+  <!-- DISH SUMMARY -->
+  <div class="section-label" id="sl-dishes">Dishes to prepare</div>
+  <div class="dish-row" id="dish-summary"></div>
+
+  <!-- ADD MANUAL -->
+  <div class="add-bar">
+    <div class="add-bar-title" id="tt-add-title">Add walk-in reservation</div>
+    <div class="add-fields">
+      <div class="add-field">
+        <span class="add-label" id="al-room">Room</span>
+        <input type="number" id="af-room" min="1" max="999" placeholder="101">
+      </div>
+      <div class="add-field">
+        <span class="add-label" id="al-adults">Adults</span>
+        <input type="number" id="af-adults" min="1" max="20" value="1">
+      </div>
+      <div class="add-field">
+        <span class="add-label" id="al-children">Children</span>
+        <input type="number" id="af-children" min="0" max="10" value="0">
+      </div>
+      <div class="add-field">
+        <span class="add-label" id="al-time">Arrival time</span>
+        <select id="af-time">
+          <option>07:00</option><option>07:30</option><option selected>08:00</option>
+          <option>08:30</option><option>09:00</option><option>09:30</option>
+          <option>10:00</option><option>10:30</option><option>11:00</option>
+        </select>
+      </div>
+      <div class="add-field">
+        <span class="add-label" id="al-dish">Dish</span>
+        <select id="af-dish">
+          <option value="Plato A">A</option>
+          <option value="Plato B">B</option>
+          <option value="Plato C">C</option>
+          <option value="Plato D">D</option>
+          <option value="Buffet continental">Buffet</option>
+        </select>
+      </div>
+      <div class="add-field">
+        <span class="add-label" id="al-dietary">Dietary note</span>
+        <input type="text" id="af-dietary" placeholder="—">
+      </div>
+      <button class="add-btn" id="tt-add-btn" onclick="addManual()">+ Add</button>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="section-label" id="sl-reservations">Reservations</div>
+  <div class="filter-row">
+    <button class="filter-btn active" onclick="setFilter('all',this)" id="fb-all">All</button>
+    <button class="filter-btn" onclick="setFilter('pending',this)" id="fb-pending">Pending</button>
+    <button class="filter-btn" onclick="setFilter('arriving',this)" id="fb-arriving">Arriving soon</button>
+    <button class="filter-btn" onclick="setFilter('done',this)" id="fb-done">Completed</button>
+  </div>
+
+  <!-- LIST -->
+  <div class="res-list" id="res-list">
+    <div class="state-msg"><span class="state-icon">⏳</span>Loading reservations...</div>
+  </div>
+
+</div>
+
+<script>
+// ─── CONFIG ──────────────────────────────────────────────────
+var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyCE9HKW9-CMU9pcjFXbxSyztZz1Pr8BM-qtahpdnBxeU0vWfqaFYVVRfkyVFvw49u8/exec';
+var AUTO_REFRESH_MS = 30000; // refresca cada 30 segundos
+
+// ─── STATE ───────────────────────────────────────────────────
+var lang = 'en';
+var currentFilter = 'all';
+var reservations = [];   // datos de la Sheet
+var manualItems = [];    // walk-ins agregados localmente
+var doneIds = {};        // {id: true} — estado local de completados
+var nextManualId = 9000;
+
+// ─── TRANSLATIONS ─────────────────────────────────────────────
+var T = {
+  en: {
+    title:'Kitchen Dashboard', live:'Live', refresh:'↻ Refresh',
+    smTotal:'Reservations', mvTotalSub:'today', smGuests:'Guests', mvGuestsSub:'total covers',
+    smPending:'Pending', smPendingSub:'not yet arrived', smDone:'Completed', smDoneSub:'served',
+    slDishes:'Dishes to prepare', ttAddTitle:'Add walk-in reservation',
+    alRoom:'Room', alAdults:'Adults', alChildren:'Children', alTime:'Arrival time', alDish:'Dish', alDietary:'Dietary note',
+    ttAddBtn:'+ Add', slReservations:'Reservations',
+    fbAll:'All', fbPending:'Pending', fbArriving:'Arriving soon', fbDone:'Completed',
+    badgePending:'Pending', badgeArriving:'Arriving', badgeDone:'Done', badgeManual:'Walk-in',
+    doneBtn:'✓ Done', arrival:'arrival',
+    included:'Included', addon:'Pay here',
+    dishNames:{ A:'Eggs', B:'Avocado', C:'Salmon', D:'Extra' },
+    adult:'adult', adults:'adults', child:'child', children:'children',
+    loading:'Loading reservations...', empty:'No reservations in this category',
+    errorLoad:'Could not load data. Check your connection and refresh.',
+    alertRoom:'Enter room number'
+  },
+  es: {
+    title:'Vista Cocina', live:'En vivo', refresh:'↻ Actualizar',
+    smTotal:'Reservas', mvTotalSub:'hoy', smGuests:'Huéspedes', mvGuestsSub:'total',
+    smPending:'Pendientes', smPendingSub:'aún no llegaron', smDone:'Completados', smDoneSub:'atendidos',
+    slDishes:'Platos a preparar', ttAddTitle:'Agregar reserva manual',
+    alRoom:'Habitación', alAdults:'Adultos', alChildren:'Niños', alTime:'Hora llegada', alDish:'Plato', alDietary:'Nota dietética',
+    ttAddBtn:'+ Agregar', slReservations:'Reservas',
+    fbAll:'Todas', fbPending:'Pendientes', fbArriving:'Por llegar', fbDone:'Completados',
+    badgePending:'Pendiente', badgeArriving:'Por llegar', badgeDone:'Listo', badgeManual:'Sin QR',
+    doneBtn:'✓ Listo', arrival:'llegada',
+    included:'Incluido', addon:'Paga aquí',
+    dishNames:{ A:'Huevos', B:'Aguacate', C:'Salmón', D:'Extra' },
+    adult:'adulto', adults:'adultos', child:'niño', children:'niños',
+    loading:'Cargando reservas...', empty:'No hay reservas en esta categoría',
+    errorLoad:'No se pudieron cargar los datos. Verificá la conexión y actualizá.',
+    alertRoom:'Ingresá el número de habitación'
+  },
+  nl: {
+    title:'Keukenweergave', live:'Live', refresh:'↻ Vernieuwen',
+    smTotal:'Reserveringen', mvTotalSub:'vandaag', smGuests:'Gasten', mvGuestsSub:'totaal',
+    smPending:'In afwachting', smPendingSub:'nog niet aangekomen', smDone:'Voltooid', smDoneSub:'bediend',
+    slDishes:'Te bereiden gerechten', ttAddTitle:'Reservering handmatig toevoegen',
+    alRoom:'Kamer', alAdults:'Volwassenen', alChildren:'Kinderen', alTime:'Aankomsttijd', alDish:'Gerecht', alDietary:'Dieetopmerking',
+    ttAddBtn:'+ Toevoegen', slReservations:'Reserveringen',
+    fbAll:'Alle', fbPending:'In afwachting', fbArriving:'Binnenkort', fbDone:'Voltooid',
+    badgePending:'In afwachting', badgeArriving:'Binnenkort', badgeDone:'Klaar', badgeManual:'Zonder QR',
+    doneBtn:'✓ Klaar', arrival:'aankomst',
+    included:'Inbegrepen', addon:'Betaalt hier',
+    dishNames:{ A:'Eieren', B:'Avocado', C:'Zalm', D:'Extra' },
+    adult:'volwassene', adults:'volwassenen', child:'kind', children:'kinderen',
+    loading:'Reserveringen laden...', empty:'Geen reserveringen in deze categorie',
+    errorLoad:'Kon gegevens niet laden. Controleer uw verbinding en vernieuw.',
+    alertRoom:'Voer kamernummer in'
+  }
+};
+
+// ─── DATE ─────────────────────────────────────────────────────
+function formatDate() {
+  var d = new Date();
+  var days = {en:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],es:['Dom','Lun','Mar','Mié','Jue','Vie','Sáb'],nl:['Zo','Ma','Di','Wo','Do','Vr','Za']};
+  var months = {en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],es:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],nl:['jan','feb','mrt','apr','mei','jun','jul','aug','sep','okt','nov','dec']};
+  var h = d.getHours().toString().padStart(2,'0');
+  var m = d.getMinutes().toString().padStart(2,'0');
+  return days[lang][d.getDay()] + ' ' + d.getDate() + ' ' + months[lang][d.getMonth()] + ' · ' + h + ':' + m;
+}
+
+// ─── DISH LETTER EXTRACTOR ────────────────────────────────────
+function dishLetter(plato) {
+  if (!plato) return '?';
+  var p = String(plato).toUpperCase();
+  if (p.includes('BUFFET') || p.includes('CONTINENTAL')) return 'BUF';
+  if (p.includes(' A') || p.endsWith('A')) return 'A';
+  if (p.includes(' B') || p.endsWith('B')) return 'B';
+  if (p.includes(' C') || p.endsWith('C')) return 'C';
+  if (p.includes(' D') || p.endsWith('D')) return 'D';
+  return p.charAt(0);
+}
+
+// ─── LOAD DATA FROM SHEET ─────────────────────────────────────
+function loadData() {
+  var tx = T[lang];
+  document.getElementById('tt-refresh').textContent = '…';
+  document.getElementById('error-banner').style.display = 'none';
+
+  // JSONP workaround para Apps Script con no-cors
+  var callbackName = 'cb_' + Date.now();
+  var script = document.createElement('script');
+  script.src = APPS_SCRIPT_URL + '?callback=' + callbackName;
+
+  window[callbackName] = function(data) {
+    document.getElementById('tt-refresh').textContent = tx.refresh;
+    script.remove();
+    delete window[callbackName];
+    if (data && data.result === 'ok') {
+      // Asigna status según hora
+      var now = new Date();
+      var nowMins = now.getHours() * 60 + now.getMinutes();
+      reservations = (data.reservations || []).map(function(r) {
+        var parts = (r.horaLlegada || '').split(':');
+        var arrMins = parts.length === 2 ? parseInt(parts[0]) * 60 + parseInt(parts[1]) : 0;
+        var diff = arrMins - nowMins;
+        var status = doneIds[r.id] ? 'done' : (diff <= 30 && diff >= -15) ? 'arriving' : diff < -15 ? 'done' : 'pending';
+        return Object.assign({}, r, { status: status, manual: false });
+      });
+      render();
+    } else {
+      showError(tx.errorLoad);
+    }
+  };
+
+  script.onerror = function() {
+    document.getElementById('tt-refresh').textContent = tx.refresh;
+    // Si JSONP falla intentamos fetch normal
+    fetch(APPS_SCRIPT_URL)
+      .then(function(r){ return r.json(); })
+      .then(function(data){
+        if (data && data.result === 'ok') {
+          reservations = (data.reservations || []).map(function(r){ return Object.assign({},r,{status:'pending',manual:false}); });
+          render();
+        } else { showError(tx.errorLoad); }
+      })
+      .catch(function(){ showError(tx.errorLoad); });
+    script.remove();
+    delete window[callbackName];
+  };
+
+  document.head.appendChild(script);
+}
+
+function showError(msg) {
+  var banner = document.getElementById('error-banner');
+  banner.textContent = msg;
+  banner.style.display = 'block';
+  document.getElementById('tt-refresh').textContent = T[lang].refresh;
+}
+
+// ─── MANUAL ADD ───────────────────────────────────────────────
+function addManual() {
+  var tx = T[lang];
+  var room = document.getElementById('af-room').value;
+  if (!room) { alert(tx.alertRoom); return; }
+  var item = {
+    id: nextManualId++,
+    habitacion: room,
+    adultos: parseInt(document.getElementById('af-adults').value) || 1,
+    ninos: parseInt(document.getElementById('af-children').value) || 0,
+    horaLlegada: document.getElementById('af-time').value,
+    plato: document.getElementById('af-dish').value,
+    tipo: 'Agrega en restaurante',
+    dietetico: document.getElementById('af-dietary').value || '—',
+    status: 'pending',
+    manual: true
+  };
+  manualItems.push(item);
+  document.getElementById('af-room').value = '';
+  document.getElementById('af-dietary').value = '';
+
+  // También lo envía a la Sheet
+  var now = new Date();
+  var payload = Object.assign({}, item, {
+    fecha: now.toLocaleDateString('es-AR'),
+    horaRegistro: now.toLocaleTimeString('es-AR',{hour:'2-digit',minute:'2-digit'}),
+    edadNinos: '—', idioma: 'MANUAL'
+  });
+  fetch(APPS_SCRIPT_URL, {
+    method: 'POST', mode: 'no-cors',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  }).catch(function(){});
+
+  render();
+}
+
+// ─── MARK DONE ────────────────────────────────────────────────
+function markDone(id) {
+  doneIds[id] = true;
+  reservations = reservations.map(function(r){ return r.id === id ? Object.assign({},r,{status:'done'}) : r; });
+  manualItems = manualItems.map(function(r){ return r.id === id ? Object.assign({},r,{status:'done'}) : r; });
+  render();
+}
+
+// ─── FILTER ───────────────────────────────────────────────────
+function setFilter(f, btn) {
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+  render();
+}
+
+// ─── LANG ─────────────────────────────────────────────────────
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(function(b,i){ b.classList.toggle('active',['en','es','nl'][i]===l); });
+  applyTranslations();
+  render();
+}
+
+function applyTranslations() {
+  var tx = T[lang];
+  document.getElementById('tt-title').textContent = tx.title;
+  document.getElementById('tt-live').textContent = tx.live;
+  document.getElementById('tt-refresh').textContent = tx.refresh;
+  document.getElementById('sm-total').textContent = tx.smTotal;
+  document.getElementById('mv-total-sub').textContent = tx.mvTotalSub;
+  document.getElementById('sm-guests').textContent = tx.smGuests;
+  document.getElementById('mv-guests-sub').textContent = tx.mvGuestsSub;
+  document.getElementById('sm-pending').textContent = tx.smPending;
+  document.getElementById('sm-pending-sub').textContent = tx.smPendingSub;
+  document.getElementById('sm-done').textContent = tx.smDone;
+  document.getElementById('sm-done-sub').textContent = tx.smDoneSub;
+  document.getElementById('sl-dishes').childNodes[0].textContent = tx.slDishes + ' ';
+  document.getElementById('tt-add-title').textContent = tx.ttAddTitle;
+  document.getElementById('al-room').textContent = tx.alRoom;
+  document.getElementById('al-adults').textContent = tx.alAdults;
+  document.getElementById('al-children').textContent = tx.alChildren;
+  document.getElementById('al-time').textContent = tx.alTime;
+  document.getElementById('al-dish').textContent = tx.alDish;
+  document.getElementById('al-dietary').textContent = tx.alDietary;
+  document.getElementById('tt-add-btn').textContent = tx.ttAddBtn;
+  document.getElementById('sl-reservations').childNodes[0].textContent = tx.slReservations + ' ';
+  document.getElementById('fb-all').textContent = tx.fbAll;
+  document.getElementById('fb-pending').textContent = tx.fbPending;
+  document.getElementById('fb-arriving').textContent = tx.fbArriving;
+  document.getElementById('fb-done').textContent = tx.fbDone;
+  document.getElementById('top-date').textContent = formatDate();
+}
+
+// ─── RENDER ───────────────────────────────────────────────────
+function render() {
+  var tx = T[lang];
+  document.getElementById('top-date').textContent = formatDate();
+
+  var all = reservations.concat(manualItems);
+  all.sort(function(a,b){ return (a.horaLlegada||'').localeCompare(b.horaLlegada||''); });
+
+  var totalGuests = all.reduce(function(s,r){ return s + (parseInt(r.adultos)||0) + (parseInt(r.ninos)||0); }, 0);
+  var pending = all.filter(function(r){ return r.status==='pending'; }).length;
+  var done = all.filter(function(r){ return r.status==='done'; }).length;
+
+  document.getElementById('mv-total').textContent = all.length;
+  document.getElementById('mv-guests').textContent = totalGuests;
+  document.getElementById('mv-pending').textContent = pending;
+  document.getElementById('mv-done').textContent = done;
+
+  // Dish counts
+  var counts = {A:0,B:0,C:0,D:0};
+  all.forEach(function(r){
+    var l = dishLetter(r.plato);
+    if (counts[l] !== undefined) counts[l]++;
+  });
+  document.getElementById('dish-summary').innerHTML = ['A','B','C','D'].map(function(d){
+    return '<div class="dish-pill"><div class="dish-left"><div class="dish-badge">'+d+'</div><div class="dish-name">'+tx.dishNames[d]+'</div></div><div class="dish-count">'+counts[d]+'</div></div>';
+  }).join('');
+
+  // Filter
+  var filtered = all.filter(function(r){
+    if (currentFilter === 'all') return true;
+    return r.status === currentFilter;
+  });
+
+  var list = document.getElementById('res-list');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="state-msg"><span class="state-icon">✓</span>' + tx.empty + '</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.map(function(r){
+    var cc = 'res-card' + (r.status==='arriving'?' arriving':'') + (r.status==='done'?' done':'') + (r.manual?' manual':'');
+    var sb = r.status==='pending' ? '<span class="badge badge-pending">'+tx.badgePending+'</span>'
+           : r.status==='arriving' ? '<span class="badge badge-arriving">'+tx.badgeArriving+'</span>'
+           : '<span class="badge badge-done">'+tx.badgeDone+'</span>';
+    var mb = r.manual ? '<span class="badge badge-manual">'+tx.badgeManual+'</span>' : '';
+    var adults = parseInt(r.adultos)||0;
+    var children = parseInt(r.ninos)||0;
+    var gs = adults + ' ' + (adults===1?tx.adult:tx.adults);
+    if (children > 0) gs += ' + ' + children + ' ' + (children===1?tx.child:tx.children);
+    var payStr = (r.tipo||'').toLowerCase().includes('inclui') || (r.tipo||'').toLowerCase().includes('inbeg') ? tx.included : tx.addon;
+    var diet = (r.dietetico && r.dietetico !== '—') ? '<span class="badge badge-dietary">⚠ '+r.dietetico+'</span>' : '';
+    var dl = dishLetter(r.plato);
+    var dishBadgeClass = (dl==='BUF') ? 'res-dish-badge buffet' : 'res-dish-badge';
+    var doneBtn = r.status !== 'done' ? '<button class="done-btn" onclick="markDone('+r.id+')">'+tx.doneBtn+'</button>' : '';
+
+    return '<div class="'+cc+'">'
+      + '<div class="res-time"><div class="res-time-val">'+(r.horaLlegada||'—')+'</div><div class="res-time-lbl">'+tx.arrival+'</div></div>'
+      + '<div class="res-info"><div class="res-room-row"><span class="res-room">Rm '+r.habitacion+'</span>'+sb+mb+diet+'</div>'
+      + '<div class="res-detail">'+gs+' · '+payStr+'</div></div>'
+      + '<div class="res-right"><div class="'+dishBadgeClass+'">'+dl+'</div>'+doneBtn+'</div>'
+      + '</div>';
+  }).join('');
+}
+
+// ─── INIT ─────────────────────────────────────────────────────
+applyTranslations();
+loadData();
+setInterval(loadData, AUTO_REFRESH_MS);
+</script>
+</body>
+</html>
