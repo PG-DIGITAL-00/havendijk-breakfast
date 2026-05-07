@@ -398,13 +398,17 @@ function loadData() {
   document.getElementById('error-banner').style.display = 'none';
 
   fetch(CSV_URL + '&t=' + Date.now())
-    .then(function(r){ return r.text(); })
-    .then(function(csv){
+    .then(function(r){ return r.arrayBuffer(); })
+    .then(function(buffer){
+      var decoder = new TextDecoder('utf-8');
+      var csv = decoder.decode(buffer);
       var rows = parseCSV(csv);
       if (rows.length <= 1) { reservations=[]; document.getElementById('tt-refresh').textContent=tx.refresh; render(); return; }
       var now=new Date(); var nowMins=now.getHours()*60+now.getMinutes();
       reservations = rows.slice(1).map(function(row,index){
         var horaLlegada=(row[8]||'').trim();
+        // normaliza hora: "9:00" -> "09:00"
+        if (horaLlegada.length === 4) horaLlegada = '0' + horaLlegada;
         var parts=horaLlegada.split(':');
         var arrMins=parts.length===2?parseInt(parts[0])*60+parseInt(parts[1]):0;
         var diff=arrMins-nowMins;
