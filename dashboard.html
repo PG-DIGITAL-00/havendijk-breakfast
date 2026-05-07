@@ -538,7 +538,7 @@ function render(){
     var dl=dishLetter(r.plato);
     var dbc=dl==='BUF'?'res-dish-badge buffet':'res-dish-badge';
     var db=r.status!=='done'?'<button class="done-btn" onclick="markDone('+r.id+')">'+tx.doneBtn+'</button>':'';
-    return '<div class="'+cc+'"><div class="res-time"><div class="res-time-val">'+(r.horaLlegada||'—')+'</div><div class="res-time-lbl">'+tx.arrival+'</div></div><div class="res-info"><div class="res-room-row"><span class="res-room">Rm '+r.habitacion+'</span>'+sb+mb+diet+'</div><div class="res-detail">'+gs+' · '+payStr+'</div></div><div class="res-right"><div class="'+dbc+'">'+dl+'</div>'+db+'</div></div>';
+    return '<div class="'+cc+'"><div class="res-time"><div class="res-time-val">'+(r.horaLlegada||'—')+'</div><div class="res-time-lbl">'+tx.arrival+'</div></div><div class="res-info"><div class="res-room-row"><span class="res-room">'+r.habitacion+'</span>'+sb+mb+diet+'</div><div class="res-detail">'+gs+' · '+payStr+'</div></div><div class="res-right"><div class="'+dbc+'">'+dl+'</div>'+db+'</div></div>';
   }).join('');
 }
 
