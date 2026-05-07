@@ -17,11 +17,11 @@
     --done-opacity:0.35;--red:#c0392b;--fs:14px;
   }
   body.theme-medium {
-    --bg:#e8f0e8;--bg2:#d8e8d8;--bg3:#cce0cc;
-    --text:#1a2e1a;--text-mid:#4a6a4a;--border:#a8c8a8;
-    --arriving:#c8e8c8;--arriving-border:#3a8a3a;
-    --manual-bg:#c8dce8;--warn-bg:#f0e8c8;--warn-text:#7a5a0a;
-    --green-pale:#d0ebd0;--green-light:#2d6e2d;--done-opacity:0.4;
+    --bg:#c8d8c8;--bg2:#b8ccb8;--bg3:#a8bca8;
+    --text:#0f1a0f;--text-mid:#3a5a3a;--border:#88aa88;
+    --arriving:#a8d0a8;--arriving-border:#2a7a2a;
+    --manual-bg:#a8c0d0;--warn-bg:#d8d0a0;--warn-text:#6a5a0a;
+    --green-pale:#b8d8b8;--green-light:#1a5a1a;--done-opacity:0.4;
   }
   body.theme-light {
     --bg:#f5f8f5;--bg2:#ffffff;--bg3:#eef4ee;
@@ -40,16 +40,36 @@
   .topbar-title{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:500;color:var(--cream);}
   .topbar-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
 
-  .ctrl-row{display:flex;gap:4px;align-items:center;}
-  .ctrl-label{font-size:10px;color:var(--text-mid);letter-spacing:0.08em;margin-right:2px;}
-  .pill-btn{font-size:11px;padding:3px 8px;border:0.5px solid var(--border);border-radius:20px;cursor:pointer;background:transparent;color:var(--text-mid);font-family:'DM Sans',sans-serif;transition:all 0.15s;}
-  .pill-btn.active{background:var(--green);color:#fff;border-color:var(--green);}
+  .ctrl-row{display:flex;gap:6px;align-items:center;}
+  .ctrl-select{font-size:12px;padding:4px 8px;border:0.5px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg3);color:var(--text-mid);font-family:'DM Sans',sans-serif;-webkit-appearance:none;appearance:none;padding-right:20px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238a8878'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 6px center;}
+  .ctrl-select option{background:var(--bg3);color:var(--text);}
   .live-pill{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--green-light);background:var(--green-pale);border:0.5px solid var(--green);border-radius:20px;padding:3px 10px;}
   .live-dot{width:6px;height:6px;border-radius:50%;background:var(--green-light);animation:pulse 2s infinite;}
   @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.3}}
   .topbar-date{font-size:12px;color:var(--text-mid);font-family:'Outfit',sans-serif;}
   .refresh-btn{font-size:12px;padding:5px 12px;border:0.5px solid var(--border);border-radius:6px;cursor:pointer;background:var(--bg3);color:var(--text-mid);font-family:'DM Sans',sans-serif;transition:all 0.15s;}
   .refresh-btn:hover{border-color:var(--green);color:var(--green-light);}
+
+  /* LOGIN SCREEN */
+  .login-screen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:2rem;}
+  .login-title{font-family:'Cormorant Garamond',serif;font-size:28px;font-weight:500;color:var(--cream);letter-spacing:0.08em;text-transform:uppercase;text-align:center;}
+  .login-hotel{font-size:11px;letter-spacing:0.3em;text-transform:uppercase;color:var(--green-light);text-align:center;margin-bottom:0.5rem;}
+  .login-cards{display:flex;gap:1rem;}
+  .login-card{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:1.5rem 2rem;cursor:pointer;text-align:center;transition:all 0.2s;min-width:160px;}
+  .login-card:hover{border-color:var(--green);transform:translateY(-2px);}
+  .login-card-icon{font-size:32px;margin-bottom:0.75rem;}
+  .login-card-title{font-size:14px;font-weight:500;color:var(--cream);letter-spacing:0.05em;text-transform:uppercase;}
+  .pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);display:none;align-items:center;justify-content:center;z-index:1000;}
+  .pin-overlay.visible{display:flex;}
+  .pin-box{background:var(--bg2);border:0.5px solid var(--border);border-radius:12px;padding:2rem;width:300px;text-align:center;}
+  .pin-box-title{font-size:15px;font-weight:500;color:var(--cream);margin-bottom:0.4rem;}
+  .pin-box-sub{font-size:12px;color:var(--text-mid);margin-bottom:1.25rem;}
+  .pin-input{width:100%;padding:12px;text-align:center;font-size:24px;letter-spacing:0.5em;border:0.5px solid var(--border);border-radius:8px;background:var(--bg3);color:var(--cream);font-family:'Outfit',sans-serif;margin-bottom:0.75rem;}
+  .pin-input:focus{outline:none;border-color:var(--green);}
+  .pin-error{font-size:12px;color:#e87a7a;margin-bottom:0.75rem;display:none;}
+  .pin-btns{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+  .pin-btn{padding:10px;border:0.5px solid var(--border);border-radius:6px;cursor:pointer;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--bg3);color:var(--text-mid);}
+  .pin-btn.confirm{background:var(--green);color:#fff;border-color:var(--green);}
 
   /* DATE NAV */
   .date-nav{background:var(--bg2);border-bottom:0.5px solid var(--border);padding:0.5rem 1.25rem;display:flex;align-items:center;gap:10px;}
@@ -120,28 +140,67 @@
 </head>
 <body>
 
+<!-- LOGIN SCREEN -->
+<div class="login-screen" id="login-screen">
+  <div>
+    <div class="login-hotel">Havendijk Hotel</div>
+    <div class="login-title" id="ls-title">BREAKFAST SYSTEM</div>
+  </div>
+  <div class="login-cards">
+    <div class="login-card" onclick="openPin('restaurant')">
+      <div class="login-card-icon">🍳</div>
+      <div class="login-card-title" id="ls-restaurant">Restaurant</div>
+    </div>
+    <div class="login-card" onclick="openPin('reception')">
+      <div class="login-card-icon">🛎</div>
+      <div class="login-card-title" id="ls-reception">Reception</div>
+    </div>
+  </div>
+</div>
+
+<!-- PIN OVERLAY -->
+<div class="pin-overlay" id="pin-overlay">
+  <div class="pin-box">
+    <div class="pin-box-title" id="pin-box-title">Enter PIN</div>
+    <div class="pin-box-sub" id="pin-box-sub">Access restricted</div>
+    <input type="password" class="pin-input" id="pin-input" maxlength="4" placeholder="····">
+    <div class="pin-error" id="pin-error">Incorrect PIN</div>
+    <div class="pin-btns">
+      <button class="pin-btn" onclick="closePin()" id="pin-cancel">Cancel</button>
+      <button class="pin-btn confirm" onclick="confirmPin()" id="pin-confirm">Enter</button>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP (hidden until login) -->
+<div id="app" style="display:none;">
+
 <div class="topbar">
-  <div class="topbar-left">
-    <span class="topbar-hotel">Havendijk Hotel</span>
-    <span class="topbar-title" id="tt-title">Kitchen Dashboard</span>
+  <div style="flex:1;text-align:center;">
+    <div class="topbar-hotel" id="topbar-hotel-label">HAVENDIJK HOTEL</div>
+    <div class="topbar-title" id="tt-title" style="font-size:24px;text-transform:uppercase;letter-spacing:0.08em;">KITCHEN DASHBOARD</div>
   </div>
   <div class="topbar-right">
     <div class="ctrl-row">
-      <span class="ctrl-label" id="lbl-theme">Theme</span>
-      <button class="pill-btn active" onclick="setTheme('dark',this)" id="th-dark">🌙</button>
-      <button class="pill-btn" onclick="setTheme('medium',this)" id="th-medium">☁️</button>
-      <button class="pill-btn" onclick="setTheme('light',this)" id="th-light">☀️</button>
+      <select class="ctrl-select" id="sel-theme" onchange="setTheme(this.value)">
+        <option value="dark" id="opt-dark">Dark</option>
+        <option value="medium" id="opt-medium">Medium</option>
+        <option value="light" id="opt-light">Light</option>
+      </select>
     </div>
     <div class="ctrl-row">
-      <span class="ctrl-label" id="lbl-size">Size</span>
-      <button class="pill-btn" onclick="setSize('sm',this)">A-</button>
-      <button class="pill-btn active" onclick="setSize('md',this)">A</button>
-      <button class="pill-btn" onclick="setSize('lg',this)">A+</button>
+      <select class="ctrl-select" id="sel-size" onchange="setSize(this.value)">
+        <option value="sm" id="opt-sm">Small</option>
+        <option value="md" selected id="opt-md">Normal</option>
+        <option value="lg" id="opt-lg">Large</option>
+      </select>
     </div>
     <div class="ctrl-row">
-      <button class="pill-btn active" onclick="setLang('en')">EN</button>
-      <button class="pill-btn" onclick="setLang('es')">ES</button>
-      <button class="pill-btn" onclick="setLang('nl')">NL</button>
+      <select class="ctrl-select" id="sel-lang" onchange="setLang(this.value)">
+        <option value="en">English</option>
+        <option value="es">Español</option>
+        <option value="nl">Nederlands</option>
+      </select>
     </div>
     <div class="live-pill"><div class="live-dot"></div><span id="tt-live">Live</span></div>
     <span class="topbar-date" id="top-date"></span>
@@ -150,11 +209,10 @@
 </div>
 
 <!-- DATE NAV -->
-<div class="date-nav">
+<div class="date-nav" style="justify-content:center;">
   <button class="date-nav-btn" onclick="changeDay(-1)">←</button>
-  <div class="date-nav-label" id="date-nav-label">Today</div>
+  <div class="date-nav-label" id="date-nav-label" style="min-width:200px;font-size:14px;"></div>
   <button class="date-nav-btn" onclick="changeDay(1)">→</button>
-  <button class="date-nav-today" onclick="goToday()" id="btn-today">Today</button>
 </div>
 
 <div class="main">
@@ -173,7 +231,7 @@
   <div class="add-bar">
     <div class="add-bar-title" id="tt-add-title">Add walk-in reservation</div>
     <div class="add-fields">
-      <div class="add-field"><span class="add-label" id="al-room">Room</span><input type="number" id="af-room" min="1" max="999" placeholder="101"></div>
+      <div class="add-field"><span class="add-label" id="al-room">Room</span><input type="number" id="af-room" min="1" max="999" placeholder=""></div>
       <div class="add-field"><span class="add-label" id="al-adults">Adults</span><input type="number" id="af-adults" min="1" max="20" value="1"></div>
       <div class="add-field"><span class="add-label" id="al-children">Children</span><input type="number" id="af-children" min="0" max="10" value="0"></div>
       <div class="add-field"><span class="add-label" id="al-time">Arrival time</span>
@@ -197,69 +255,92 @@
   <div class="res-list" id="res-list"><div class="state-msg"><span class="state-icon">⏳</span>Loading...</div></div>
 </div>
 
+</div><!-- /app -->
+
 <script>
 var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzkZu1t5sRINGhsBPv0e2igygHgbsKRS4FTYqKhrOBqQAjh8iyVh6dVw35z5mHfKXOk/exec';
 var CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRWY7wkogftyV-5j65pfnUFcqXpFElnWSbrXTHVjG1HYmWQX4svPQR9MxuNi16NnJtYHg1GoTION1Qk/pub?gid=0&single=true&output=csv';
 var AUTO_REFRESH_MS = 30000;
+var PINS = { restaurant: '1234', reception: '7777' };
 
 var lang = 'en', currentFilter = 'all';
 var reservations = [], manualItems = [], doneIds = {}, nextManualId = 9000;
 var viewDate = new Date(); viewDate.setHours(0,0,0,0);
+var pendingSection = null;
 
 var T = {
-  en:{title:'Kitchen Dashboard',live:'Live',refresh:'↻ Refresh',smTotal:'Reservations',mvTotalSub:'selected day',smGuests:'Guests',mvGuestsSub:'total covers',smPending:'Pending',smPendingSub:'not yet arrived',smDone:'Completed',smDoneSub:'served',slDishes:'Dishes to prepare',ttAddTitle:'Add walk-in reservation',alRoom:'Room',alAdults:'Adults',alChildren:'Children',alTime:'Arrival time',alDish:'Dish',alDietary:'Dietary note',ttAddBtn:'+ Add',slReservations:'Reservations',fbAll:'All',fbPending:'Pending',fbArriving:'Arriving soon',fbDone:'Completed',badgePending:'Pending',badgeArriving:'Arriving',badgeDone:'Done',badgeManual:'Walk-in',doneBtn:'✓ Done',arrival:'arrival',included:'Included',addon:'Pay here',dishNames:{A:'Eggs',B:'Avocado',C:'Salmon',D:'Extra'},adult:'adult',adults:'adults',child:'child',children:'children',loading:'Loading...',empty:'No reservations for this day',errorLoad:'Could not load data.',alertRoom:'Enter room number',lblTheme:'Theme',lblSize:'Size',btnToday:'Today',today:'Today',yesterday:'Yesterday'},
-  es:{title:'Vista Cocina',live:'En vivo',refresh:'↻ Actualizar',smTotal:'Reservas',mvTotalSub:'día seleccionado',smGuests:'Huéspedes',mvGuestsSub:'total',smPending:'Pendientes',smPendingSub:'aún no llegaron',smDone:'Completados',smDoneSub:'atendidos',slDishes:'Platos a preparar',ttAddTitle:'Agregar reserva manual',alRoom:'Habitación',alAdults:'Adultos',alChildren:'Niños',alTime:'Hora llegada',alDish:'Plato',alDietary:'Nota dietética',ttAddBtn:'+ Agregar',slReservations:'Reservas',fbAll:'Todas',fbPending:'Pendientes',fbArriving:'Por llegar',fbDone:'Completados',badgePending:'Pendiente',badgeArriving:'Por llegar',badgeDone:'Listo',badgeManual:'Sin QR',doneBtn:'✓ Listo',arrival:'llegada',included:'Incluido',addon:'Paga aquí',dishNames:{A:'Huevos',B:'Aguacate',C:'Salmón',D:'Extra'},adult:'adulto',adults:'adultos',child:'niño',children:'niños',loading:'Cargando...',empty:'No hay reservas para este día',errorLoad:'No se pudieron cargar los datos.',alertRoom:'Ingresá el número de habitación',lblTheme:'Tema',lblSize:'Tamaño',btnToday:'Hoy',today:'Hoy',yesterday:'Ayer'},
-  nl:{title:'Keukenweergave',live:'Live',refresh:'↻ Vernieuwen',smTotal:'Reserveringen',mvTotalSub:'geselecteerde dag',smGuests:'Gasten',mvGuestsSub:'totaal',smPending:'In afwachting',smPendingSub:'nog niet aangekomen',smDone:'Voltooid',smDoneSub:'bediend',slDishes:'Te bereiden gerechten',ttAddTitle:'Reservering handmatig toevoegen',alRoom:'Kamer',alAdults:'Volwassenen',alChildren:'Kinderen',alTime:'Aankomsttijd',alDish:'Gerecht',alDietary:'Dieetopmerking',ttAddBtn:'+ Toevoegen',slReservations:'Reserveringen',fbAll:'Alle',fbPending:'In afwachting',fbArriving:'Binnenkort',fbDone:'Voltooid',badgePending:'In afwachting',badgeArriving:'Binnenkort',badgeDone:'Klaar',badgeManual:'Zonder QR',doneBtn:'✓ Klaar',arrival:'aankomst',included:'Inbegrepen',addon:'Betaalt hier',dishNames:{A:'Eieren',B:'Avocado',C:'Zalm',D:'Extra'},adult:'volwassene',adults:'volwassenen',child:'kind',children:'kinderen',loading:'Laden...',empty:'Geen reserveringen voor deze dag',errorLoad:'Kon gegevens niet laden.',alertRoom:'Voer kamernummer in',lblTheme:'Thema',lblSize:'Grootte',btnToday:'Vandaag',today:'Vandaag',yesterday:'Gisteren'}
+  en:{title:'KITCHEN DASHBOARD',live:'Live',refresh:'↻ Refresh',smTotal:'Reservations',mvTotalSub:'selected day',smGuests:'Guests',mvGuestsSub:'total covers',smPending:'Pending',smPendingSub:'not yet arrived',smDone:'Completed',smDoneSub:'served',slDishes:'Dishes to prepare',ttAddTitle:'Add walk-in reservation',alRoom:'Room',alAdults:'Adults',alChildren:'Children',alTime:'Arrival time',alDish:'Dish',alDietary:'Dietary note',ttAddBtn:'+ Add',slReservations:'Reservations',fbAll:'All',fbPending:'Pending',fbArriving:'Arriving soon',fbDone:'Completed',badgePending:'Pending',badgeArriving:'Arriving',badgeDone:'Done',badgeManual:'Walk-in',doneBtn:'✓ Done',arrival:'arrival',included:'Included',addon:'Pay here',dishNames:{A:'Eggs',B:'Avocado',C:'Salmon',D:'Extra'},adult:'adult',adults:'adults',child:'child',children:'children',loading:'Loading...',empty:'No reservations for this day',errorLoad:'Could not load data.',alertRoom:'Enter room number',lsTitle:'BREAKFAST SYSTEM',lsRestaurant:'Restaurant',lsReception:'Reception',pinTitle:'Enter PIN',pinSub:'Access restricted',pinError:'Incorrect PIN',pinCancel:'Cancel',pinConfirm:'Enter',selTheme:'Background colour',optDark:'Dark',optMedium:'Medium',optLight:'Light',selSize:'Font size',optSm:'Small',optMd:'Normal',optLg:'Large'},
+  es:{title:'VISTA COCINA',live:'En vivo',refresh:'↻ Actualizar',smTotal:'Reservas',mvTotalSub:'día seleccionado',smGuests:'Huéspedes',mvGuestsSub:'total',smPending:'Pendientes',smPendingSub:'aún no llegaron',smDone:'Completados',smDoneSub:'atendidos',slDishes:'Platos a preparar',ttAddTitle:'Agregar reserva manual',alRoom:'Habitación',alAdults:'Adultos',alChildren:'Niños',alTime:'Hora llegada',alDish:'Plato',alDietary:'Nota dietética',ttAddBtn:'+ Agregar',slReservations:'Reservas',fbAll:'Todas',fbPending:'Pendientes',fbArriving:'Por llegar',fbDone:'Completados',badgePending:'Pendiente',badgeArriving:'Por llegar',badgeDone:'Listo',badgeManual:'Sin QR',doneBtn:'✓ Listo',arrival:'llegada',included:'Incluido',addon:'Paga aquí',dishNames:{A:'Huevos',B:'Aguacate',C:'Salmón',D:'Extra'},adult:'adulto',adults:'adultos',child:'niño',children:'niños',loading:'Cargando...',empty:'No hay reservas para este día',errorLoad:'No se pudieron cargar los datos.',alertRoom:'Ingresá el número de habitación',lsTitle:'SISTEMA DE DESAYUNO',lsRestaurant:'Restaurante',lsReception:'Recepción',pinTitle:'Ingresar PIN',pinSub:'Acceso restringido',pinError:'PIN incorrecto',pinCancel:'Cancelar',pinConfirm:'Ingresar',selTheme:'Color de fondo',optDark:'Oscuro',optMedium:'Intermedio',optLight:'Claro',selSize:'Tamaño de letra',optSm:'Pequeño',optMd:'Normal',optLg:'Grande'},
+  nl:{title:'KEUKENWEERGAVE',live:'Live',refresh:'↻ Vernieuwen',smTotal:'Reserveringen',mvTotalSub:'geselecteerde dag',smGuests:'Gasten',mvGuestsSub:'totaal',smPending:'In afwachting',smPendingSub:'nog niet aangekomen',smDone:'Voltooid',smDoneSub:'bediend',slDishes:'Te bereiden gerechten',ttAddTitle:'Reservering handmatig toevoegen',alRoom:'Kamer',alAdults:'Volwassenen',alChildren:'Kinderen',alTime:'Aankomsttijd',alDish:'Gerecht',alDietary:'Dieetopmerking',ttAddBtn:'+ Toevoegen',slReservations:'Reserveringen',fbAll:'Alle',fbPending:'In afwachting',fbArriving:'Binnenkort',fbDone:'Voltooid',badgePending:'In afwachting',badgeArriving:'Binnenkort',badgeDone:'Klaar',badgeManual:'Zonder QR',doneBtn:'✓ Klaar',arrival:'aankomst',included:'Inbegrepen',addon:'Betaalt hier',dishNames:{A:'Eieren',B:'Avocado',C:'Zalm',D:'Extra'},adult:'volwassene',adults:'volwassenen',child:'kind',children:'kinderen',loading:'Laden...',empty:'Geen reserveringen voor deze dag',errorLoad:'Kon gegevens niet laden.',alertRoom:'Voer kamernummer in',lsTitle:'ONTBIJTSYSTEEM',lsRestaurant:'Restaurant',lsReception:'Receptie',pinTitle:'PIN invoeren',pinSub:'Toegang beperkt',pinError:'Onjuiste PIN',pinCancel:'Annuleren',pinConfirm:'Invoeren',selTheme:'Achtergrondkleur',optDark:'Donker',optMedium:'Middel',optLight:'Licht',selSize:'Lettergrootte',optSm:'Klein',optMd:'Normaal',optLg:'Groot'}
 };
 
+// ─── PIN LOGIN ────────────────────────────────────────────────
+function openPin(section) {
+  pendingSection = section;
+  var tx = T[lang];
+  document.getElementById('pin-box-title').textContent = tx.pinTitle;
+  document.getElementById('pin-box-sub').textContent = tx.pinSub;
+  document.getElementById('pin-error').textContent = tx.pinError;
+  document.getElementById('pin-error').style.display = 'none';
+  document.getElementById('pin-cancel').textContent = tx.pinCancel;
+  document.getElementById('pin-confirm').textContent = tx.pinConfirm;
+  document.getElementById('pin-input').value = '';
+  document.getElementById('pin-overlay').classList.add('visible');
+  setTimeout(function(){ document.getElementById('pin-input').focus(); }, 100);
+}
+function closePin() {
+  document.getElementById('pin-overlay').classList.remove('visible');
+  pendingSection = null;
+}
+function confirmPin() {
+  var val = document.getElementById('pin-input').value;
+  var correct = PINS[pendingSection];
+  if (val !== correct) {
+    document.getElementById('pin-error').style.display = 'block';
+    document.getElementById('pin-input').value = '';
+    return;
+  }
+  closePin();
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  applyT(); loadData();
+  setInterval(function(){ loadData(); document.getElementById('top-date').textContent = formatClock(); }, AUTO_REFRESH_MS);
+}
+// Allow Enter key in PIN input
+document.getElementById('pin-input').addEventListener('keydown', function(e){ if(e.key==='Enter') confirmPin(); });
+
 // ─── THEME & SIZE ─────────────────────────────────────────────
-function setTheme(t, btn) {
+function setTheme(t) {
   document.body.classList.remove('theme-medium','theme-light');
   if (t==='medium') document.body.classList.add('theme-medium');
   if (t==='light') document.body.classList.add('theme-light');
-  document.querySelectorAll('#th-dark,#th-medium,#th-light').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
   localStorage.setItem('hv-theme', t);
 }
-function setSize(s, btn) {
+function setSize(s) {
   document.body.classList.remove('fs-sm','fs-lg');
   if (s==='sm') document.body.classList.add('fs-sm');
   if (s==='lg') document.body.classList.add('fs-lg');
-  document.querySelectorAll('.ctrl-row:nth-child(2) .pill-btn').forEach(function(b){ b.classList.remove('active'); });
-  btn.classList.add('active');
   localStorage.setItem('hv-size', s);
 }
 
 // ─── DATE NAV ─────────────────────────────────────────────────
 function changeDay(delta) {
   viewDate = new Date(viewDate.getTime() + delta * 86400000);
-  updateDateLabel();
-  render();
-}
-function goToday() {
-  viewDate = new Date(); viewDate.setHours(0,0,0,0);
-  updateDateLabel();
-  render();
+  updateDateLabel(); render();
 }
 function updateDateLabel() {
-  var tx = T[lang];
-  var today = new Date(); today.setHours(0,0,0,0);
-  var yesterday = new Date(today.getTime() - 86400000);
-  var label;
-  if (viewDate.getTime() === today.getTime()) label = tx.today;
-  else if (viewDate.getTime() === yesterday.getTime()) label = tx.yesterday;
-  else label = viewDate.toLocaleDateString(lang==='nl'?'nl-NL':lang==='es'?'es-ES':'en-GB', {weekday:'short',day:'numeric',month:'short'});
+  var locale = lang==='nl'?'nl-NL':lang==='es'?'es-ES':'en-GB';
+  var label = viewDate.toLocaleDateString(locale, {weekday:'long', day:'numeric', month:'long', year:'numeric'});
+  // Capitalize first letter
+  label = label.charAt(0).toUpperCase() + label.slice(1);
   document.getElementById('date-nav-label').textContent = label;
-  document.getElementById('btn-today').textContent = tx.btnToday;
 }
 
 // ─── DATE FORMAT MATCH ────────────────────────────────────────
 function matchesViewDate(fechaStr) {
   if (!fechaStr) return false;
-  // Intenta parsear varios formatos
   var d = new Date(fechaStr);
   if (isNaN(d.getTime())) {
-    // intenta dd/mm/yyyy
     var parts = String(fechaStr).split('/');
     if (parts.length === 3) d = new Date(parts[2]+'-'+parts[1]+'-'+parts[0]);
   }
@@ -360,7 +441,7 @@ function setFilter(f,btn){currentFilter=f;document.querySelectorAll('.filter-btn
 // ─── LANG ─────────────────────────────────────────────────────
 function setLang(l){
   lang=l;
-  document.querySelectorAll('.ctrl-row:nth-child(3) .pill-btn').forEach(function(b,i){b.classList.toggle('active',['en','es','nl'][i]===l);});
+  document.getElementById('sel-lang').value=l;
   applyT(); render();
 }
 function applyT(){
@@ -368,8 +449,6 @@ function applyT(){
   document.getElementById('tt-title').textContent=tx.title;
   document.getElementById('tt-live').textContent=tx.live;
   document.getElementById('tt-refresh').textContent=tx.refresh;
-  document.getElementById('lbl-theme').textContent=tx.lblTheme;
-  document.getElementById('lbl-size').textContent=tx.lblSize;
   document.getElementById('sm-total').textContent=tx.smTotal;
   document.getElementById('mv-total-sub').textContent=tx.mvTotalSub;
   document.getElementById('sm-guests').textContent=tx.smGuests;
@@ -393,6 +472,15 @@ function applyT(){
   document.getElementById('fb-arriving').textContent=tx.fbArriving;
   document.getElementById('fb-done').textContent=tx.fbDone;
   document.getElementById('top-date').textContent=formatClock();
+  document.getElementById('opt-dark').textContent=tx.optDark;
+  document.getElementById('opt-medium').textContent=tx.optMedium;
+  document.getElementById('opt-light').textContent=tx.optLight;
+  document.getElementById('opt-sm').textContent=tx.optSm;
+  document.getElementById('opt-md').textContent=tx.optMd;
+  document.getElementById('opt-lg').textContent=tx.optLg;
+  document.getElementById('ls-title').textContent=tx.lsTitle;
+  document.getElementById('ls-restaurant').textContent=tx.lsRestaurant;
+  document.getElementById('ls-reception').textContent=tx.lsReception;
   updateDateLabel();
 }
 
@@ -449,12 +537,12 @@ function render(){
 (function init(){
   var savedTheme=localStorage.getItem('hv-theme')||'dark';
   var savedSize=localStorage.getItem('hv-size')||'md';
-  if(savedTheme!=='dark'){document.body.classList.add('theme-'+savedTheme);document.getElementById('th-'+savedTheme).classList.add('active');document.getElementById('th-dark').classList.remove('active');}
-  if(savedSize==='sm'){document.body.classList.add('fs-sm');}
-  if(savedSize==='lg'){document.body.classList.add('fs-lg');}
+  setTheme(savedTheme);
+  setSize(savedSize);
+  document.getElementById('sel-theme').value=savedTheme;
+  document.getElementById('sel-size').value=savedSize;
   applyT();
-  loadData();
-  setInterval(function(){loadData();document.getElementById('top-date').textContent=formatClock();},AUTO_REFRESH_MS);
+  updateDateLabel();
 })();
 </script>
 </body>
