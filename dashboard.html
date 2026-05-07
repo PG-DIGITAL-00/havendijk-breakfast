@@ -519,64 +519,79 @@ function dishLetter(plato) {
   return p.charAt(0);
 }
 
-// ─── LOAD DATA FROM SHEET ─────────────────────────────────────
+// ─── LOAD DATA FROM SHEET (via CSV — no CORS issues) ──────────
+var CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRWY7wkogftyV-5j65pfnUFcqXpFElnWSbrXTHVjG1HYmWQX4svPQR9MxuNi16NnJtYHg1GoTION1Qk/pub?gid=0&single=true&output=csv';
+
 function loadData() {
   var tx = T[lang];
   document.getElementById('tt-refresh').textContent = '…';
   document.getElementById('error-banner').style.display = 'none';
 
-  // JSONP workaround para Apps Script con no-cors
-  var callbackName = 'cb_' + Date.now();
-  var script = document.createElement('script');
-  script.src = APPS_SCRIPT_URL + '?callback=' + callbackName;
-
-  window[callbackName] = function(data) {
-    document.getElementById('tt-refresh').textContent = tx.refresh;
-    script.remove();
-    delete window[callbackName];
-    if (data && data.result === 'ok') {
-      // Asigna status según hora
+  fetch(CSV_URL + '&t=' + Date.now())
+    .then(function(r) { return r.text(); })
+    .then(function(csv) {
+      var rows = parseCSV(csv);
+      if (rows.length <= 1) {
+        reservations = [];
+        document.getElementById('tt-refresh').textContent = tx.refresh;
+        render();
+        return;
+      }
       var now = new Date();
       var nowMins = now.getHours() * 60 + now.getMinutes();
-      reservations = (data.reservations || []).map(function(r) {
-        var parts = (r.horaLlegada || '').split(':');
+      // fila 0 = encabezados, desde fila 1 son datos
+      reservations = rows.slice(1).map(function(row, index) {
+        var horaLlegada = (row[8] || '').trim();
+        var parts = horaLlegada.split(':');
         var arrMins = parts.length === 2 ? parseInt(parts[0]) * 60 + parseInt(parts[1]) : 0;
         var diff = arrMins - nowMins;
-        var status = doneIds[r.id] ? 'done' : (diff <= 30 && diff >= -15) ? 'arriving' : diff < -15 ? 'done' : 'pending';
-        return Object.assign({}, r, { status: status, manual: false });
-      });
+        var status = doneIds[index+1] ? 'done' : (diff <= 30 && diff >= -15) ? 'arriving' : diff < -15 ? 'done' : 'pending';
+        return {
+          id:           index + 1,
+          fecha:        (row[0] || '').trim(),
+          horaRegistro: (row[1] || '').trim(),
+          habitacion:   (row[2] || '').trim(),
+          adultos:      parseInt(row[3]) || 0,
+          ninos:        parseInt(row[4]) || 0,
+          edadNinos:    (row[5] || '—').trim(),
+          tipo:         (row[6] || '').trim(),
+          plato:        (row[7] || '').trim(),
+          horaLlegada:  horaLlegada,
+          dietetico:    (row[9] || '—').trim(),
+          idioma:       (row[10] || '').trim(),
+          status:       status,
+          manual:       false
+        };
+      }).filter(function(r){ return r.habitacion !== ''; });
+
+      document.getElementById('tt-refresh').textContent = tx.refresh;
       render();
-    } else {
-      showError(tx.errorLoad);
+    })
+    .catch(function(err) {
+      document.getElementById('tt-refresh').textContent = tx.refresh;
+      showError(tx.errorLoad + ' (' + err.message + ')');
+    });
+}
+
+// ─── CSV PARSER ───────────────────────────────────────────────
+function parseCSV(text) {
+  var rows = [];
+  var lines = text.split('\n');
+  lines.forEach(function(line) {
+    if (!line.trim()) return;
+    var cols = [];
+    var current = '';
+    var inQuotes = false;
+    for (var i = 0; i < line.length; i++) {
+      var ch = line[i];
+      if (ch === '"') { inQuotes = !inQuotes; }
+      else if (ch === ',' && !inQuotes) { cols.push(current); current = ''; }
+      else { current += ch; }
     }
-  };
-
-  script.onerror = function() {
-    document.getElementById('tt-refresh').textContent = tx.refresh;
-    // JSONP falla — intentamos fetch normal silenciosamente
-    fetch(APPS_SCRIPT_URL)
-      .then(function(r){ return r.json(); })
-      .then(function(data){
-        if (data && data.result === 'ok') {
-          var now = new Date();
-          var nowMins = now.getHours() * 60 + now.getMinutes();
-          reservations = (data.reservations || []).map(function(r){
-            var parts = (r.horaLlegada || '').split(':');
-            var arrMins = parts.length === 2 ? parseInt(parts[0]) * 60 + parseInt(parts[1]) : 0;
-            var diff = arrMins - nowMins;
-            var status = doneIds[r.id] ? 'done' : (diff <= 30 && diff >= -15) ? 'arriving' : diff < -15 ? 'done' : 'pending';
-            return Object.assign({}, r, { status: status, manual: false });
-          });
-          document.getElementById('error-banner').style.display = 'none';
-          render();
-        } else { showError(tx.errorLoad); }
-      })
-      .catch(function(){ showError(tx.errorLoad); });
-    script.remove();
-    delete window[callbackName];
-  };
-
-  document.head.appendChild(script);
+    cols.push(current);
+    rows.push(cols);
+  });
+  return rows;
 }
 
 function showError(msg) {
